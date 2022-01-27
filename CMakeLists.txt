@@ -1,0 +1,25 @@
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+file(STRINGS "VERSION" VERSION_STRING)
+project(ntopng VERSION "${VERSION_STRING}" LANGUAGES CXX)
+set(CMAKE_BUILD_TYPE_INIT Release)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Debug)
+endif()
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
+include_directories(include)
+file(GLOB_RECURSE INCLUDE_FILES ${CMAKE_SOURCE_DIR}/include/*.h)
+file(GLOB_RECURSE SOURCE_FILES_NO_MAIN ${CMAKE_SOURCE_DIR}/src/*.cpp)
+# for using catch we don't need the main
+list(FILTER SOURCE_FILES_NO_MAIN EXCLUDE REGEX ".*main.cpp$")
+include(${CMAKE_SOURCE_DIR}/cmake/unit_test.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/clang_tools.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/cppcheck.cmake)
+
+if(CMAKE_BUILD_TYPE MATCHES "^[Rr]elease")
+include(${CMAKE_SOURCE_DIR}/cmake/doxygen.cmake)
+endif()
