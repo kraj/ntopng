@@ -1,5 +1,6 @@
 *~
 ntopng.sublime-*
+build/*
 src/*.o
 src/*.obj
 third-party/json-c/config.h.in
@@ -112,3 +113,4 @@ ntopng.pid
 packages/wizard/ntopng-config
 tests/rest/data/*
 tools/tmp.csv
+.gitignore
