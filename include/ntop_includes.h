@@ -21,8 +21,9 @@
 
 #ifndef _NTOP_H_
 #define _NTOP_H_
-
+#ifndef NTOP_CMAKE_BUILD
 #include "config.h"
+#endif
 
 
 #if defined (__FreeBSD) || defined(__FreeBSD__)
