@@ -17,6 +17,7 @@ find_package(Threads REQUIRED)
 find_package(OpenSSL REQUIRED)  
 find_package(ZeroMQ REQUIRED)
 find_package(PCAP REQUIRED)
+find_package(Ndpi REQUIRED)
 
 include_directories(include ${OPENSSL_INCLUDE_DIR} ${ZeroMQ_INCLUDE_DIRS} ${PCAP_INCLUDE_DIR})
 
