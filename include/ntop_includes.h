@@ -153,7 +153,6 @@ https://translate.google.co.uk/translate?sl=auto&tl=en&u=http%3A%2F%2Fbugsfixed.
 #pragma comment(lib, "wldap32.lib") 
 #endif
 
-#include "third-party/uthash.h"
 
 #ifdef HAVE_MYSQL
 #include <mysql.h>
