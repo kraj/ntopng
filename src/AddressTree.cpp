@@ -109,7 +109,7 @@ typedef struct {
 
 /* ******************************************* */
 
-static void compact_tree_funct(ndpi_patricia_node_t *node, void *data, void *user_data) {
+static void compact_tree_funct(ndpi_patricia_node_t *node, [[maybe_unused]] void *data, void *user_data) {
   ndpi_prefix_t *prefix;
   compact_tree_t *compact = (compact_tree_t*)user_data;
 
@@ -378,7 +378,7 @@ int16_t AddressTree::find(const char *addr, u_int8_t *network_mask_bits) {
 
 /* **************************************************** */
 
-static void address_tree_dump_funct(ndpi_patricia_node_t * node, void *data, void *user_data) {
+static void address_tree_dump_funct(ndpi_patricia_node_t * node, [[maybe_unused]] void *data, void *user_data) {
   char address[128];
   ndpi_prefix_t *prefix;
 

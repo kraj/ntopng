@@ -4047,7 +4047,7 @@ void Flow::updateTLS(ParsedFlow *zflow) {
 
 /* *************************************** */
 
-void Flow::dissectDNS(bool src2dst_direction, char *payload, u_int16_t payload_len) {
+void Flow::dissectDNS([[maybe_unused]] bool src2dst_direction, char *payload, u_int16_t payload_len) {
   struct ndpi_dns_packet_header dns_header;
   u_int8_t payload_offset = get_protocol() == IPPROTO_UDP ? 0 : 2;
 
@@ -4478,7 +4478,7 @@ void Flow::dissectMDNS(u_int8_t *payload, u_int16_t payload_len) {
 
 /* *************************************** */
 
-void Flow::dissectSSDP(bool src2dst_direction, char *payload, u_int16_t payload_len) {
+void Flow::dissectSSDP([[maybe_unused]] bool src2dst_direction, char *payload, u_int16_t payload_len) {
   char url[512];
   u_int i = 0;
 

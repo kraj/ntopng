@@ -34,7 +34,7 @@ class TCPZeroWindow : public FlowCheck {
 			     false /* has_protocol_detected */, true /* has_periodic_update */, true /* has_flow_end */) {};
   ~TCPZeroWindow() {};
 
-  bool loadConfiguration(json_object *config) { return(true); }
+  bool loadConfiguration([[maybe_unused]] json_object *config) { return(true); }
 
   void periodicUpdate(Flow *f);
   void flowEnd(Flow *f);

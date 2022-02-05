@@ -35,7 +35,7 @@ class HostCheck : public Check {
   /* Check hook (periodic)
    * engaged_alert is the alert already engaged by the check
    * in a previous iteration, if any. */
-  virtual void periodicUpdate(Host *h, HostAlert *engaged_alert) {};
+  virtual void periodicUpdate([[maybe_unused]] Host *h, [[maybe_unused]] HostAlert *engaged_alert) {};
 
   virtual u_int32_t getPeriod() { return periodicity_secs; }
   inline bool isMinCheck()  const { return periodicity_secs == 60;  };

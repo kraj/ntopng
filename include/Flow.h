@@ -655,7 +655,7 @@ class Flow : public GenericHashEntry {
   void dissectBittorrent(char *payload, u_int16_t payload_len);
   void updateInterfaceLocalStats(bool src2dst_direction, u_int num_pkts, u_int pkt_len);
   void fillZmqFlowCategory(const ParsedFlow *zflow, ndpi_protocol *res) const;
-  inline void setICMP(bool src2dst_direction, u_int8_t icmp_type, u_int8_t icmp_code, u_int8_t *icmpdata) {
+  inline void setICMP(bool src2dst_direction, u_int8_t icmp_type, u_int8_t icmp_code, [[maybe_unused]] u_int8_t *icmpdata) {
     if(isICMP()) {
       if(src2dst_direction)
 	protos.icmp.cli2srv.icmp_type = icmp_type, protos.icmp.cli2srv.icmp_code = icmp_code;

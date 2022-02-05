@@ -48,7 +48,7 @@ class IpAddress {
 
  public:
   IpAddress();
-  IpAddress(const IpAddress& ipa);
+  IpAddress([[maybe_unused]] const IpAddress& ipa);
 
   bool isEmpty() const;
   inline void reset()                                  { memset(&addr, 0, sizeof(addr));               }

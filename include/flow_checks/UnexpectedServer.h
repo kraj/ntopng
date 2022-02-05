@@ -34,7 +34,7 @@ class UnexpectedServer : public FlowCheck {
 protected:
   bool isAllowedHost(Flow *f);
 
-  virtual bool isAllowedProto(Flow *f)          { return(false); }
+  virtual bool isAllowedProto([[maybe_unused]] Flow *f)          { return(false); }
   virtual const IpAddress* getServerIP(Flow *f) { return(f->get_srv_ip_addr()); }
 
 public:

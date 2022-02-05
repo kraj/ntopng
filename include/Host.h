@@ -398,14 +398,14 @@ class Host : public GenericHashEntry, public HostAlertableEntity, public Score, 
   virtual void addContactedDomainName([[maybe_unused ]] char* domain_name) {};       
   virtual u_int32_t getDomainNamesCardinality()          { return 0; };      
   virtual void resetDomainNamesCardinality()             {};
-  virtual NetworkStats* getNetworkStats(int16_t networkId) { return(NULL);   };
+  virtual NetworkStats* getNetworkStats([[maybe_unused]] int16_t networkId) { return(NULL);   };
   inline Country* getCountryStats()                        { return country; };
 
   bool match([[maybe_unused ]] const AddressTree * const tree) const { return ip.match(tree); };
   void updateHostPool(bool isInlineCall, bool firstUpdate = false);
   virtual bool dropAllTraffic() const { return(false); };
   virtual bool setRemoteToRemoteAlerts() { return(false); };
-  virtual void incrVisitedWebSite(char *hostname) {};
+  virtual void incrVisitedWebSite([[maybe_unused]] char *hostname) {};
   inline void incTotalAlerts() { stats->incTotalAlerts(); }
   inline u_int32_t getTotalAlerts()       { return(stats->getTotalAlerts()); }
   virtual u_int32_t getActiveHTTPHosts()  { return(0); };

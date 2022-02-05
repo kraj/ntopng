@@ -64,7 +64,7 @@ class ViewInterface : public NetworkInterface {
   virtual u_int32_t periodicStatsUpdateFrequency() const;
   void flowPollLoop();
   void startPacketPolling();
-  bool set_packet_filter(char *filter)    { return false ;                        };
+  bool set_packet_filter([[maybe_unused]] char *filter)    { return false ;                        };
 
   AlertsQueue* getAlertsQueue()     const { return alertsQueue;   };
 

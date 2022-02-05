@@ -28,13 +28,11 @@ class DoHDoTStats {
 private:
   IpAddress ip;
   VLANid vlan_id;
-  u_int32_t num_uses;
+  u_int32_t num_uses{0};
   
 public:
-  DoHDoTStats(IpAddress i, VLANid id) { ip = i, vlan_id = id, num_uses = 0; }
-
+  DoHDoTStats(const IpAddress& i, const VLANid& id): ip{i}, vlan_id{id} {} 
   inline void incUses() { num_uses++; }
-
   void lua(lua_State *vm) {
     char buf[64];
     
@@ -112,7 +110,7 @@ class LocalHost : public Host, public SerializableElement {
 
   virtual void lua(lua_State* vm, AddressTree * ptree, bool host_details,
 		   bool verbose, bool returnHost, bool asListElement);
-  void custom_periodic_stats_update(const struct timeval *tv) { ; }
+  void custom_periodic_stats_update([[maybe_unused]] const struct timeval *tv) { ; }
 
   virtual void luaHostBehaviour(lua_State* vm)    { if(stats) stats->luaHostBehaviour(vm); }
   virtual void incDohDoTUses(Host *srv_host);

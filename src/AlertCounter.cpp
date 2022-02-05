@@ -42,7 +42,7 @@ void AlertCounter::reset_window(time_t when) {
 
 /* *************************************** */
 
-void AlertCounter::inc(time_t when, AlertableEntity *alertable) {
+void AlertCounter::inc(time_t when, [[maybe_unused]] AlertableEntity *alertable) {
   if(hits_reset_req) { /* Reset the maximum as requested and start over */
     trailing_window_max_since_hits_reset = 0;
     hits_reset_req = false;

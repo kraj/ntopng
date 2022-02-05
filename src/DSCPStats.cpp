@@ -84,7 +84,7 @@ void DSCPStats::sum(DSCPStats *stats) const {
 
 /* *************************************** */
 
-void DSCPStats::print(NetworkInterface *iface) {
+void DSCPStats::print([[maybe_unused]]  NetworkInterface *iface) {
   for(int i = 0; i < 8; i++) {
     if(counters[i].bytes.sent || counters[i].bytes.rcvd)
       printf("[%d] [pkts: %llu/%llu][bytes: %llu/%llu]\n", i,
@@ -95,7 +95,7 @@ void DSCPStats::print(NetworkInterface *iface) {
 
 /* *************************************** */
 
-void DSCPStats::lua(NetworkInterface *iface, lua_State* vm, bool tsLua) {
+void DSCPStats::lua([[maybe_unused]] NetworkInterface *iface, lua_State* vm, bool tsLua) {
   char name[16], buf[64];
 
   lua_newtable(vm);

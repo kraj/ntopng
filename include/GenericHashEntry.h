@@ -154,7 +154,7 @@ class GenericHashEntry {
    * hash entry into the hash table (class GenericHash)
    * it belongs to.
    */
-  virtual void set_hash_entry_id(u_int hash_entry_id) { };
+  virtual void set_hash_entry_id([[maybe_unused]] u_int hash_entry_id) { };
 
   /**
    * @brief Set the next hash entry.
@@ -234,10 +234,10 @@ class GenericHashEntry {
   bool equal(GenericHashEntry *b)         { return((this == b) ? true : false); };  
   inline NetworkInterface* getInterface() { return(iface);                      };
   bool idle() const;
-  virtual void housekeep(time_t t)  { return;                 };
+  virtual void housekeep([[maybe_unused]] time_t t)  { return;                 };
   inline u_int get_duration()    const { return((u_int)(1+last_seen-first_seen)); };
   virtual u_int32_t key()              { return(0);         };  
-  virtual char* get_string_key(char *buf, u_int buf_len) const { buf[0] = '\0'; return(buf); };
+  virtual char* get_string_key(char *buf, [[maybe_unused]] u_int buf_len) const { buf[0] = '\0'; return(buf); };
   void incUses()                       { num_uses++;                     }
   void decUses()                       { num_uses--;                     }
   int32_t getUses()              const { return(num_uses);               }

@@ -60,7 +60,7 @@ class TimelineExtract {
   inline time_t getTo() { return extraction.to; };
   inline const char *getFilter() { return extraction.bpf_filter; };
   inline const char *getTimelinePath() { return extraction.timeline_path; };
-  inline const u_int64_t getMaxBytes() { return extraction.max_bytes; };
+  inline u_int64_t getMaxBytes() { return extraction.max_bytes; };
   inline bool isRunning() { return running; };
   void stop();
   /* sync */

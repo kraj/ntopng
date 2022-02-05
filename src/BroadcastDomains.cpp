@@ -170,7 +170,7 @@ struct bcast_domain_walk_data {
   lua_State *vm;
 };
 
-static void bcast_domain_lua(ndpi_patricia_node_t *node, void *data, void *user_data) {
+static void bcast_domain_lua(ndpi_patricia_node_t *node, [[maybe_unused]] void *data, void *user_data) {
   char address[128];
   struct bcast_domain_walk_data *bdata = (struct bcast_domain_walk_data *)user_data;
   std::map<u_int16_t, bcast_domain_info>::iterator it;

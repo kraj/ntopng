@@ -34,7 +34,7 @@ class TCPNoDataExchanged : public FlowCheck {
 				   false /* has_protocol_detected */, false /* has_periodic_update */, true /* has_flow_end */) {};
   ~TCPNoDataExchanged() {};
 
-  bool loadConfiguration(json_object *config1) { return(true); }
+  bool loadConfiguration([[maybe_unused]] json_object *config1) { return(true); }
 
   void flowEnd(Flow *f);
   FlowAlert *buildAlert(Flow *f);

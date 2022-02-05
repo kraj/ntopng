@@ -389,7 +389,7 @@ class Prefs {
   inline bool isMacBasedCaptivePortal()               const { return(mac_based_captive_portal);  }
   inline bool enableActivitiesDebug()                 const { return(enable_activities_debug);   }
   const char * getCaptivePortalUrl();
-  const TsDriver getTimeseriesDriver()                const { return(timeseries_driver);         }
+  TsDriver getTimeseriesDriver()                const { return(timeseries_driver);         }
 
   inline u_int8_t  getDefaultl7Policy()                  { return(default_l7policy);  }
 

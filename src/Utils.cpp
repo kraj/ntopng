@@ -5086,7 +5086,7 @@ char* Utils::toLowerResolvedNames(const char *const resolvedName) {
 
 /* ************************************************ */
 
-bool const Utils::isIpEmpty(ipAddress addr) {
+bool  Utils::isIpEmpty(ipAddress addr) {
   if((addr.ipVersion == 0)
      || ((addr.ipVersion == 4) && (addr.ipType.ipv4 == 0))) {
     return true;

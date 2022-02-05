@@ -61,7 +61,7 @@ ElasticSearch::~ElasticSearch() {
 
 /* **************************************** */
 
-bool ElasticSearch::dumpFlow(time_t when, Flow *f, char *msg) {
+bool ElasticSearch::dumpFlow([[maybe_unused]] time_t when, [[maybe_unused]] Flow *f, char *msg) {
   struct string_list *e;
   bool rc = true;
 
