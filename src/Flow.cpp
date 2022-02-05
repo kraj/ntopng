@@ -2367,7 +2367,7 @@ u_int32_t Flow::key() {
 
 u_int32_t Flow::key(Host *_cli, u_int16_t _cli_port,
 		    Host *_srv, u_int16_t _srv_port,
-		    VLANid _vlan_id, u_int16_t _observation_point_id,
+		    VLANid _vlan_id, [[maybe_unsed]] u_int16_t _observation_point_id,
 		    u_int16_t _protocol) {
   u_int32_t k = _cli_port + _srv_port + _vlan_id + _protocol;
 
@@ -3779,7 +3779,7 @@ void Flow::incTcpBadStats(bool src2dst_direction,
 
 /* *************************************** */
 
-void Flow::updateTcpSeqNum(const struct bpf_timeval *when,
+void Flow::updateTcpSeqNum([[maybe_unsed]] const struct bpf_timeval *when,
 			   u_int32_t seq_num, u_int32_t ack_seq_num,
 			   u_int16_t window, u_int8_t flags,
 			   u_int16_t payload_Len, bool src2dst_direction) {
