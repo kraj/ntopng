@@ -416,9 +416,10 @@ class NetworkInterface : public NetworkInterfaceAlertableEntity {
   virtual void startFlowDumping();
   virtual void shutdown();
   virtual void cleanup();
-  virtual char *getEndpoint(u_int8_t id)       { return NULL;   };
-  virtual bool set_packet_filter(char *filter) { return(false); };
-  virtual void incrDrops(u_int32_t num)        { ; }
+  // all maybe_unused needs to be refactored
+  virtual char *getEndpoint([[maybe_unused ]]  u_int8_t id)       { return NULL;   };
+  virtual bool set_packet_filter([[maybe_unused ]] char *filter) { return(false); };
+  virtual void incrDrops([[maybe_unused ]] u_int32_t num)        { ; }
   /* calling virtual in constructors/destructors should be avoided
      See C++ FAQ Lite covers this in section 23.7
   */
@@ -811,8 +812,9 @@ class NetworkInterface : public NetworkInterfaceAlertableEntity {
   void addInterfaceAddress(char * const addr);
   void addInterfaceNetwork(char * const net, char * addr);
   bool isInterfaceNetwork(const IpAddress * const ipa, int network_bits) const;
-  inline int exec_sql_query(lua_State *vm, char *sql, bool limit_rows, bool wait_for_db_created = true) {
+  inline int exec_sql_query([[maybe_unused ]] lua_State *vm, [[maybe_unused ]] char *sql, [[maybe_unused ]] bool limit_rows, [[maybe_unused ]] bool wait_for_db_created = true) {
 #ifdef HAVE_MYSQL
+  // FIXME: this is bad for performance
     if(dynamic_cast<MySQLDB*>(db) != NULL)
       return ((MySQLDB*)db)->exec_sql_query(vm, sql, limit_rows, wait_for_db_created);
 #endif

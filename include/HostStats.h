@@ -86,7 +86,9 @@ class HostStats: public GenericTrafficElement {
       recv_stats.incFlagStats(flags, cumulative_flags);
   };
   
-  virtual void computeAnomalyIndex(time_t when) {};
+  // FIXME: this default makes no sense.
+  // review design.
+  virtual void computeAnomalyIndex([[maybe_unused ]] time_t when) {};
 
   inline Host* getHost() const { return(host); }
   inline void incNumAlertedFlows(bool as_client)   { if(as_client) alerted_flows_as_client++; else alerted_flows_as_server++; };
@@ -109,7 +111,8 @@ class HostStats: public GenericTrafficElement {
   virtual u_int16_t getNumActiveContactsAsClient() { return 0; }
   virtual u_int16_t getNumActiveContactsAsServer() { return 0; }
   virtual void resetTopSitesData() {};
-  virtual void addContactedDomainName(char* domain_name) {}       
+  // TODO: fix this refactor.
+  virtual void addContactedDomainName([[maybe_unused ]] char* domain_name) {}       
   virtual u_int32_t getDomainNamesCardinality()    {return (u_int32_t)-1;  }  
   virtual void resetDomainNamesCardinality()       {}
   
@@ -122,11 +125,11 @@ class HostStats: public GenericTrafficElement {
   inline u_int32_t getTotalNumFlowsAsClient() const { return(total_num_flows_as_client);  };
   inline u_int32_t getTotalNumFlowsAsServer() const { return(total_num_flows_as_server);  };
   inline u_int32_t getTotalActivityTime()     const { return(total_activity_time);        };
-  virtual void deserialize(json_object *obj)        {}
+  virtual void deserialize([[maybe_unused ]] json_object *obj)        {}
   virtual void incNumFlows(bool as_client) { if(as_client) total_num_flows_as_client++; else total_num_flows_as_server++; } ;
-  virtual bool hasAnomalies(time_t when) { return false; };
-  virtual void luaAnomalies(lua_State* vm, time_t when) {};
-  virtual void luaPeers(lua_State *vm) 			{};
+  virtual bool hasAnomalies([[maybe_unused ]] time_t when) { return false; };
+  virtual void luaAnomalies([[maybe_unused ]] lua_State* vm, [[maybe_unused ]] time_t when) {};
+  virtual void luaPeers([[maybe_unused ]] lua_State *vm) 			{};
   virtual void lua(lua_State* vm, bool mask_host, DetailsLevel details_level);
   void updateStats(const struct timeval *tv);
   virtual void luaHostBehaviour(lua_State* vm);
@@ -151,30 +154,32 @@ class HostStats: public GenericTrafficElement {
   inline HostPoolStats* getQuotaEnforcementStats() { return(quota_enforcement_stats); }
 #endif
   
-  virtual void luaHTTP(lua_State *vm) {}
-  virtual void luaDNS(lua_State *vm, bool verbose)  {}
-  virtual void luaICMP(lua_State *vm, bool isV4, bool verbose)  {}
-  virtual void incrVisitedWebSite(char *hostname) {}
+  virtual void luaHTTP([[maybe_unused ]] lua_State *vm) {}
+  virtual void luaDNS([[maybe_unused ]] lua_State *vm, [[maybe_unused ]] bool verbose)  {}
+  virtual void luaICMP([[maybe_unused ]] lua_State *vm, [[maybe_unused ]] bool isV4, [[maybe_unused ]] bool verbose)  {}
+  virtual void incrVisitedWebSite([[maybe_unused ]] char *hostname) {}
   virtual HTTPstats* getHTTPstats()  { return(NULL); }
   virtual DnsStats*  getDNSstats()   { return(NULL); }
   virtual ICMPstats* getICMPstats()  { return(NULL); }
+  //TODO: refactor, it might means that the GenericTraffic 
+  // superclass is to fat, so we might want 
+  // to split using interface segregation.
+  virtual void incCliContactedPorts([[maybe_unused ]] u_int16_t port)  { ; }
+  virtual void incSrvPortsContacts([[maybe_unused ]] u_int16_t port)   { ; }
+  virtual void incContactedService([[maybe_unused ]] char *name)       { ; }
+  virtual void incCliContactedHosts([[maybe_unused ]] IpAddress *peer) { ; }
+  virtual void incSrvHostContacts([[maybe_unused ]] IpAddress *peer)   { ; }
 
-  virtual void incCliContactedPorts(u_int16_t port)  { ; }
-  virtual void incSrvPortsContacts(u_int16_t port)   { ; }
-  virtual void incContactedService(char *name)       { ; }
-  virtual void incCliContactedHosts(IpAddress *peer) { ; }
-  virtual void incSrvHostContacts(IpAddress *peer)   { ; }
-
-  virtual void incCountriesContacts(char *country)    { ; }
+  virtual void incCountriesContacts([[maybe_unused ]] char *country)    { ; }
   virtual void resetCountriesContacts()               { ; }
   virtual u_int8_t getCountriesContactsCardinality()  { return((u_int8_t)-1); }
   
   virtual u_int32_t getNTPContactCardinality()  { return((u_int32_t)-1); }
   virtual u_int32_t getDNSContactCardinality()  { return((u_int32_t)-1); }
   virtual u_int32_t getSMTPContactCardinality() { return((u_int32_t)-1); }
-  virtual void incNTPContactCardinality(Host *h)  { ; }
-  virtual void incDNSContactCardinality(Host *h)  { ; }
-  virtual void incSMTPContactCardinality(Host *h) { ; }
+  virtual void incNTPContactCardinality([[maybe_unused ]] Host *h)  { ; }
+  virtual void incDNSContactCardinality([[maybe_unused ]] Host *h)  { ; }
+  virtual void incSMTPContactCardinality([[maybe_unused ]] Host *h) { ; }
 
   inline bool has_flows_anomaly(bool as_client) { return(as_client ? client_flows_anomaly : server_flows_anomaly); }
   inline u_int64_t value_flows_anomaly(bool as_client) { return(as_client ? active_flows_cli.getLastValue() : active_flows_srv.getLastValue()); }

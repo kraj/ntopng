@@ -96,9 +96,9 @@ class PartializableFlowTrafficStats {
   u_int16_t get_num_http_requests() const;
   u_int16_t get_num_dns_queries()   const;
 
-  inline const u_int16_t get_cli_score(ScoreCategory score_category) const { return cli_host_score[score_category]; };
-  inline const u_int16_t get_srv_score(ScoreCategory score_category) const { return srv_host_score[score_category]; };
-  inline const bool      get_is_flow_alerted() const { return is_flow_alerted; };
+  inline u_int16_t get_cli_score(ScoreCategory score_category) const { return cli_host_score[score_category]; };
+  inline u_int16_t get_srv_score(ScoreCategory score_category) const { return srv_host_score[score_category]; };
+  inline bool get_is_flow_alerted() const { return is_flow_alerted; };
 };
 
 #endif /* _PARTIALIZABLE_FLOW_TRAFFIC_STATS_H_ */

@@ -43,7 +43,7 @@ class HostCheck : public Check {
 
   inline void enable(u_int32_t _periodicity_secs) { Check::enable(); periodicity_secs = _periodicity_secs; }
 
-  inline void addCheck(std::list<HostCheck*> *l, NetworkInterface *iface) { l->push_back(this); }
+  inline void addCheck(std::list<HostCheck*> *l, [[maybe_unused]] NetworkInterface *iface) { l->push_back(this); }
   virtual bool loadConfiguration(json_object *config);
 
   virtual HostCheckID getID() const = 0;  

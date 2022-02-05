@@ -243,7 +243,7 @@ class Host : public GenericHashEntry, public HostAlertableEntity, public Score, 
   void set_mac(Mac  *m);
   inline bool isBlacklisted()                 const { return(ip.isBlacklistedAddress()); };
   void reloadHostBlacklist();
-  inline const u_int8_t* const get_mac() const { return(mac ? mac->get_mac() : NULL);}
+  inline const u_int8_t* get_mac() const { return(mac ? mac->get_mac() : NULL);}
   inline Mac* getMac() const                   { return(mac);              }
   inline DeviceType getDeviceType()      const { Mac *m = mac; return(isBroadcastDomainHost() && m ? m->getDeviceType() : device_unknown); }
   char * getResolvedName(char * const buf, ssize_t buf_len);
@@ -300,7 +300,7 @@ class Host : public GenericHashEntry, public HostAlertableEntity, public Score, 
 
   bool is_hash_entry_state_idle_transition_ready();
   void periodic_stats_update(const struct timeval *tv);
-  virtual void custom_periodic_stats_update(const struct timeval *tv) { ; }
+  virtual void custom_periodic_stats_update([[maybe_unused]] const struct timeval *tv) { ; }
   
   virtual void lua(lua_State* vm, AddressTree * ptree, bool host_details,
 	   bool verbose, bool returnHost, bool asListElement);
@@ -346,7 +346,7 @@ class Host : public GenericHashEntry, public HostAlertableEntity, public Score, 
     bool peer_is_unicast);
   inline void checkpoint(lua_State* vm) { if(stats) return stats->checkpoint(vm); };
   void incHitter(Host *peer, u_int64_t sent_bytes, u_int64_t rcvd_bytes);
-  virtual void updateHostTrafficPolicy(char *key) {};
+  virtual void updateHostTrafficPolicy([[maybe_unused]] char *key) {};
   bool addIfMatching(lua_State* vm, AddressTree * ptree, char *key);
   bool addIfMatching(lua_State* vm, u_int8_t *mac);
   void updateSynAlertsCounter(time_t when, bool syn_sent);
@@ -375,7 +375,7 @@ class Host : public GenericHashEntry, public HostAlertableEntity, public Score, 
   void incNumFlows(time_t t, bool as_client);
   void decNumFlows(time_t t, bool as_client);
   inline void incNumAlertedFlows(bool as_client) { active_alerted_flows++; if(stats) stats->incNumAlertedFlows(as_client); }
-  inline void decNumAlertedFlows(bool as_client) { active_alerted_flows--; }
+  inline void decNumAlertedFlows([[maybe_unused]] bool as_client) { active_alerted_flows--; }
 
   inline u_int32_t getNumAlertedFlows() const { return(active_alerted_flows); }
   inline void incNumUnreachableFlows(bool as_server) { if(stats) stats->incNumUnreachableFlows(as_server); }
@@ -384,21 +384,23 @@ class Host : public GenericHashEntry, public HostAlertableEntity, public Score, 
   inline void incFlagStats(bool as_client, u_int8_t flags, bool cumulative_flags)  {
     stats->incFlagStats(as_client, flags, cumulative_flags);
   };
-  virtual void luaHTTP(lua_State *vm)              { };
-  virtual void luaDNS(lua_State *vm, bool verbose) { };
-  virtual void luaICMP(lua_State *vm, bool isV4, bool verbose)    { };
-  virtual void luaTCP(lua_State *vm) { };
+  virtual void luaHTTP([[maybe_unused ]] lua_State *vm)              { };
+  virtual void luaDNS([[maybe_unused ]] lua_State *vm, [[maybe_unused ]] bool verbose) { };
+  virtual void luaICMP([[maybe_unused ]] lua_State *vm, 
+  [[maybe_unused ]] bool isV4, 
+  [[maybe_unused ]] bool verbose)    { };
+  virtual void luaTCP([[maybe_unused ]] lua_State *vm) { };
   virtual u_int16_t getNumActiveContactsAsClient()  { return 0; };
   virtual u_int16_t getNumActiveContactsAsServer()  { return 0; };
   inline TcpPacketStats* getTcpPacketSentStats() { return(stats->getTcpPacketSentStats()); }
   inline TcpPacketStats* getTcpPacketRcvdStats() { return(stats->getTcpPacketRcvdStats()); }
-  virtual void addContactedDomainName(char* domain_name) {};       
+  virtual void addContactedDomainName([[maybe_unused ]] char* domain_name) {};       
   virtual u_int32_t getDomainNamesCardinality()          { return 0; };      
   virtual void resetDomainNamesCardinality()             {};
   virtual NetworkStats* getNetworkStats(int16_t networkId) { return(NULL);   };
   inline Country* getCountryStats()                        { return country; };
 
-  bool match(const AddressTree * const tree) const { return ip.match(tree); };
+  bool match([[maybe_unused ]] const AddressTree * const tree) const { return ip.match(tree); };
   void updateHostPool(bool isInlineCall, bool firstUpdate = false);
   virtual bool dropAllTraffic() const { return(false); };
   virtual bool setRemoteToRemoteAlerts() { return(false); };
@@ -442,8 +444,8 @@ class Host : public GenericHashEntry, public HostAlertableEntity, public Score, 
   void checkBroadcastDomain();
   bool hasAnomalies() const;
   void housekeep(time_t t); /* Virtual method, called in the datapath from GenericHash::purgeIdle */
-  virtual void inlineSetOSDetail(const char *detail) { }
-  virtual const char* getOSDetail(char * const buf, ssize_t buf_len);
+  virtual void inlineSetOSDetail([[maybe_unused ]] const char *detail) { }
+  virtual const char* getOSDetail([[maybe_unused ]] char * const buf, [[maybe_unused ]] ssize_t buf_len);
   void offlineSetTLSName(const char * const n);
   void offlineSetHTTPName(const char * const n);
   void offlineSetNetbiosName(const char * const n);
@@ -482,15 +484,15 @@ class Host : public GenericHashEntry, public HostAlertableEntity, public Score, 
 
   virtual void luaHostBehaviour(lua_State* vm) { lua_pushnil(vm); }
   void luaCountriesBehaviour(lua_State* vm) { lua_pushnil(vm); }
-  virtual void incDohDoTUses(Host *srv_host) {}
+  virtual void incDohDoTUses([[maybe_unused ]] Host *srv_host) {}
 
-  virtual void incCountriesContacts(char *country)    { ; }
+  virtual void incCountriesContacts([[maybe_unused ]] char *country)    { ; }
   virtual void resetCountriesContacts()               { ; }
   virtual u_int8_t getCountriesContactsCardinality()  { return(0); }
 
-  virtual void incNTPContactCardinality(Host *h)  { ; }
-  virtual void incDNSContactCardinality(Host *h)  { ; }
-  virtual void incSMTPContactCardinality(Host *h) { ; }    
+  virtual void incNTPContactCardinality([[maybe_unused]] Host *h)  { ; }
+  virtual void incDNSContactCardinality([[maybe_unused]] Host *h)  { ; }
+  virtual void incSMTPContactCardinality([[maybe_unused]] Host *h) { ; }    
   
   virtual u_int32_t getNTPContactCardinality()    { return(0); }
   virtual u_int32_t getDNSContactCardinality()    { return(0); }

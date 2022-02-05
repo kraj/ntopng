@@ -28,7 +28,7 @@ template <typename METRICTYPE> class MonitoredMetric {
   time_t     last_update;
   METRICTYPE anomaly_index;
 
-  inline void updateAnomalyIndex(time_t when, int64_t delta) {
+  inline void updateAnomalyIndex(int64_t delta) {
     if(delta > 0)
       gains = ewma((METRICTYPE)delta, gains),
 	losses = ewma(0, losses);
@@ -73,7 +73,7 @@ public:
   inline METRICTYPE get()             const { return(value);         }
   inline METRICTYPE getAnomalyIndex() const { return(anomaly_index); }
   virtual void computeAnomalyIndex(time_t when) = 0;
-  inline bool is_misbehaving(time_t when, u_int8_t low_threshold = 25, u_int8_t high_threshold = 75) const {
+  inline bool is_misbehaving(u_int8_t low_threshold = 25, u_int8_t high_threshold = 75) const {
     return(last_update
 	   && ((anomaly_index > 0 && anomaly_index < low_threshold) || (anomaly_index > high_threshold)) ? true : false);
   }
@@ -88,7 +88,7 @@ public:
     return((float)anomaly_index /* Last computed */);
   }
 
-  const char * const print(char * const buf, ssize_t buf_size) {
+  const char *  print(char * const buf, ssize_t buf_size) {
     if(buf && buf_size) {
       snprintf(buf, buf_size, "%s[value: %lu][last_value: %lu][RSI: %lu][gains: %lu][losses: %lu][last_update: %u]\n",
 	       this->is_misbehaving(0) ? "<<<***>>> Anomaly " : "",
@@ -100,7 +100,7 @@ public:
     return buf;
   }
 
-  void const lua(lua_State *vm, const char *table_key) const {
+  void lua(lua_State *vm, const char *table_key) const {
 #ifdef MONITOREDMETRIC_DEBUG
     char buf[128];
     printf("Lua anomaly [%s] %s", table_key, print(buf, sizeof(buf)));

@@ -42,7 +42,7 @@ class BehaviouralCounter {
      true     An anomaly has been detected (i.e. prediction < lower_bound, or prediction > upper_bound)
      false    The value is within the expected range
   */
-  virtual bool addObservation(u_int64_t value) { return(false); };
+  virtual bool addObservation([[maybe_unused]] u_int64_t value) { return(false); };
   inline u_int64_t getTotNumAnomalies() { return(tot_num_anomalies); };
 
   /* Last measurement */

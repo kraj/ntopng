@@ -51,11 +51,16 @@ class AlertableEntity {
   inline AlertEntity getEntityType()  const { return(entity_type); }
 
   inline u_int getNumEngagedAlerts()  const { return(num_engaged_alerts); }
-
-  virtual void countAlerts(grouped_alerts_counters *counters) {};
-  virtual void getAlerts(lua_State* vm, ScriptPeriodicity p, 
-			 AlertType type_filter, AlertLevel severity_filter, AlertRole role_filter,
-			 u_int *idx) {};
+  // TODO get rid of this default
+  virtual void countAlerts([[maybe_unused ]] grouped_alerts_counters *counters) {};
+  // TODO: it has to many parameters.
+  // maybe a context struct should be more useful
+  virtual void getAlerts([[maybe_unused ]] lua_State* vm, 
+  [[maybe_unused ]] ScriptPeriodicity p, 
+			 [[maybe_unused ]] AlertType type_filter, 
+       [[maybe_unused ]] AlertLevel severity_filter, 
+       [[maybe_unused ]] AlertRole role_filter,
+			 [[maybe_unused ]] u_int *idx) {};
 
   bool matchesAllowedNetworks(AddressTree *allowed_nets);
 

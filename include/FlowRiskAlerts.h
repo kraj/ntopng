@@ -48,7 +48,7 @@ class FlowRiskAlerts {
       return risk_enum_to_alert_type[risk].alert_type;
   }
   
-  static inline const char * const getCheckName(ndpi_risk_enum risk) {
+  static inline const char * getCheckName(ndpi_risk_enum risk) {
     if(isRiskUnhanlded(risk))
       return risk_enum_to_alert_type[NDPI_NO_RISK].alert_lua_name;
     else

@@ -34,13 +34,14 @@ class FlowCheck : public Check {
   virtual ~FlowCheck();
   
   /* Check hooks */
-  virtual void protocolDetected(Flow *f) {};
-  virtual void periodicUpdate(Flow *f)   {};
-  virtual void flowEnd(Flow *f)          {};
-  virtual void flowBegin(Flow *f)        {};
+  // TODO also here there is some refactoring needed.
+  virtual void protocolDetected([[maybe_unused]] Flow *f) {};
+  virtual void periodicUpdate([[maybe_unused]] Flow *f)   {};
+  virtual void flowEnd([[maybe_unused]] Flow *f)          {};
+  virtual void flowBegin([[maybe_unused]] Flow *f)        {};
 
   /* Used to build an alert when triggerAlertAsync is used */
-  virtual FlowAlert *buildAlert(Flow *f) { return NULL; };
+  virtual FlowAlert *buildAlert([[maybe_unused]] Flow *f) { return NULL; };
 
   void addCheck(std::list<FlowCheck*> *l, NetworkInterface *iface, FlowChecks check);
   virtual bool loadConfiguration(json_object *config);
