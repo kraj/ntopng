@@ -34,7 +34,7 @@ template <typename METRICTYPE> class MonitoredCounter : public MonitoredMetric<M
       METRICTYPE diff = this->value - this->last_value;
       int64_t delta = (int64_t)(diff) - last_diff;
 
-      this->updateAnomalyIndex(when, delta);
+      this->updateAnomalyIndex(delta);
 
 #ifdef MONITOREDCOUNTER_DEBUG
       printf("%s[MonitoredCounter][value: %lu][diff: %lu][last_diff: %lu][delta: %ld][RSI: %lu][gains: %lu][losses: %lu]\n",
