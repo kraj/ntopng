@@ -857,7 +857,8 @@ for v,k in pairs(iface_names) do
       	    descr = _ifstats.description
       	 else
             if prefs.is_interface_name_only == false then
-      	      descr = descr .. " (".. _ifstats.description ..")" -- Add description
+	       -- Removed description that can be long with ZMQ
+      	      descr = descr -- .. " (".. _ifstats.description ..")" -- Add description
             end
       	 end
       end
@@ -1100,7 +1101,7 @@ if(not is_no_login_user) then
  <li>
    <a class="dropdown-item" href="]]
    print(ntop.getHttpPrefix())
-   print [[/lua/logout.lua" onclick="return confirm(']] print(i18n("login.logout_message")) print [[')"><i class="fas fa-sign-out-alt"></i> ]] print(i18n("login.logout")) print[[</a></li>]]
+   print [[/lua/ntopng_logout.lua" onclick="return confirm(']] print(i18n("login.logout_message")) print [[')"><i class="fas fa-sign-out-alt"></i> ]] print(i18n("login.logout")) print[[</a></li>]]
  end
 
  -- Restart menu, the restart JS code can be found inside footer.lua

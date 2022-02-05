@@ -1148,6 +1148,12 @@ local lang = {
     ["factory_reset_all_checks"] = "Ripristino Impostazioni Di Fabbrica dei Check",
     ["factory_reset_all_message"] = "Vuoi resettare  la configurazione delle selezioni?",
     ["long_lived_flows_descr"] = "> %{duration}",
+    ["network_discovery_alert_description"] = "Scoperta della Rete periodica eseguita",
+    ["network_discovery_description"] = "Esegue un allarme quando viene eseguita una Scoperta della Rete",
+    ["network_discovery_title"] = "Scoperta della Rete Identificata",
+    ["no_activity_description"] = "Nessuna attività riportata dall'interfaccia di rete.",
+    ["no_if_activity_description"] = "Attiva un'allerta quando è riscontrata nessuna attività da parte di un'interfaccia di rete",
+    ["no_if_activity_title"] = "Nessuna attività da un'interfaccia",
     ["note_apply_to_default"] = "La configurazione di <b>default</b> è 'Applicata a' ogni pool che non è incluso in ogni altra configurazione più specifica.",
     ["note_configsets"] = "Gli user script sono configurati e abilitati/disabilitati in base alla configurazione. Più configurazioni possono esser create, e ogni configurazione più essere 'Applicata a' pool differenti.",
     ["note_what_are_checks"] = "Gli <a href=\"%{checks_url}\">User Script</a> %{checks_external} sono eseguiti periodicamente oppure quando un certo evento si verifica.",
@@ -4162,6 +4168,45 @@ local lang = {
     ["note_broader_network"] = "Le reti più ampie non includeranno host definiti in reti più piccole.",
     ["note_overlapping_networks"] = "NOTA: In caso di overlapping tra reti:",
     ["note_see_both_network_entries"] = "Puoi vedere entrambe le entrate di rete nella tabella sopra.",
+  },
+  ["notification_endpoint"] = {
+    ["fail2ban"] = {
+      ["description"] = "<ul><li>Fail2Ban è richiesto per poter utilizzare l'Endpoint. Controllare: <a href='https://www.fail2ban.org/wiki/index.php/Downloads' target='_blank'>qui</a> <i class='%{icon}'></i> per maggiori informazioni riguardati l'installazione.<li>L'Endpoint Fail2Ban verrà eseguito solo su specifici allarmi supportati.</ul><ul>Note: l'utente ntopng deve avere i privilegi di sudo.</ul>",
+      ["fail2ban_send_error"] = "Fail2Ban non funzionante correttamente.",
+      ["jail"] = "Jail",
+      ["jail_description"] = "<ul><li>Specificare la JAIL utilizzata per bloccare l'IP. Controllare: <a href='https://www.fail2ban.org/wiki/index.php/MANUAL_0_8#Jails' target='_blank'>qui</a> <i class='%{icon}'></i> per maggiori informazioni riguardanti le JAIL.</ul>Nota, if il controllo dell'Endpoint non va a buon fine, controllare:<ul><li>Che l'utente ntopng abbia i privilegi di sudo.<li>Che la JAIL inserita sia corretta (utilizzare il comando `fail2ban-client status` per controllare le JAIL disponibili).",
+      ["validation"] = {
+        ["empty_jail"] = "Fail2Ban JAIL non puo' esser vuoto.",
+        ["invalid_jail"] = "Fail2Ban jail non valido.",
+      },
+    },
+    ["shell_alert_endpoint"] = {
+      ["shell_options"] = "Opzioni",
+      ["shell_script"] = "Percorso (path) dello Script",
+      ["shell_send_error"] = "Errore nell'esecuzione dello script.",
+      ["shell_description"] = {
+        ["option_description"] = "Istruzioni<ul><li>Inserire qui le opzioni che si vogliono passare allo script</ul>",
+        ["path_description"] = "Note:<ul><li>Lo script deve essere contenuto in \"/usr/share/ntopng/scripts/shell/\"<li>Le opzioni dello script alert.* saranno espanse a runtime con il valore dell'allarme</lu>",
+      },
+      ["validation"] = {
+        ["empty_path"] = "Il percorso di uno script shell non può essere vuoto.",
+        ["invalid_path"] = "Percorso dello script shell non valido. Lo script deve essere nella cartella \"/usr/share/ntopng/scripts/shell/\" e deve avere il suffisso .sh.",
+        ["invalid_script"] = "Script non valido. Script ritenuto non sicuro.",
+      },
+    },
+    ["telegram_alert_endpoint"] = {
+      ["telegram_channel"] = "Channel Id",
+      ["telegram_send_error"] = "Errore nell'invio del messaggio a Telegram.",
+      ["telegram_token"] = "Token",
+      ["validation"] = {
+        ["invalid_channel_name"] = "Nome del canale non valido.",
+        ["invalid_token"] = "Token di Telegram non valido.",
+      },
+      ["webhook_description"] = {
+        ["channel_id_description"] = "Istruzioni se vuoi utilizzare il bot in un gruppo:<ul><li>Aggiungi al tuo gruppo il bot che hai creato<li>Aggiungi al tuo gruppo @getidsbot<li>Copia qui l'id che @getidsbot ti ha fornito</ul>Istruzioni se vuoi utilizzare il bot in una chat:<ul><li>Inizia una nuova chat con @getidsbot<li>Copia qui l'id che @getidsbot ti ha fornito</ul>",
+        ["token_description"] = "Istruzioni:<ul><li>Inizia una nuova chat con @BotFather<li>Scrivi nella chat '/newbot'<li>Dai un nome al tuo bot<li>Dai uno username al tuo bot<li>Copia qui il token che @BotFather ti ha fornito</ul>",
+      },
+    },
   },
   ["os_details"] = {
     ["no_available_stats_for_os"] = "Nessuna statistica disponibile per l'OS %{os}",

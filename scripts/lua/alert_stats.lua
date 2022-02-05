@@ -412,7 +412,7 @@ local operators_by_filter = {
    role = {'eq'},
    role_cli_srv = {'eq'},
    text = {'eq','neq'},
-   hostname = {'eq','neq'},
+   hostname = {'eq','neq', 'in', 'nin'},
 }
 
 local defined_tags = {
@@ -489,7 +489,7 @@ if page ~= "all" then
 end
 
 for tag_key, operators in pairs(defined_tags[page] or {}) do
-   tag_utils.add_tag_if_valid(initial_tags, tag_key, operators, 'tags')
+   tag_utils.add_tag_if_valid(initial_tags, tag_key, operators, 'db_search.tags')
 end
 
 local base_url = build_query_url({'status', 'page', 'epoch_begin', 'epoch_end'}) 

@@ -837,8 +837,8 @@ NetworkInterface::~NetworkInterface() {
   if(hostAlertsQueue)       delete hostAlertsQueue;
 
   addRedisSitesKey();
-  if(top_sites)        delete top_sites;
-  if(top_os)           delete top_os;
+  if(top_sites)             delete top_sites;
+  if(top_os)                delete top_os;
 
   if(prev_flow_checks_executor) delete prev_flow_checks_executor;
   if(flow_checks_executor)      delete flow_checks_executor;
@@ -1269,7 +1269,7 @@ bool NetworkInterface::registerSubInterface(NetworkInterface *sub_iface,  u_int6
   flowHashing[criteria] = sub_iface; /* Add it to the hash */
 
   numSubInterfaces++;
-  ntop->getRedis()->set(CONST_STR_RELOAD_LISTS, (const char * const)"1");
+  ntop->getRedis()->set(CONST_STR_RELOAD_LISTS, (const char *)"1");
 
   return true;
 }
@@ -1610,7 +1610,8 @@ bool NetworkInterface::processPacket(u_int32_t bridge_iface_idx,
       trusted_payload_len = trusted_l4_packet_len - sizeof(struct ndpi_udphdr);
 
 #ifdef IMPLEMENT_SMART_FRAGMENTS
-      fragment_extra_overhead = ntohs(udph->len) - l4_len + sizeof(struct ndpi_iphdr);
+      if(is_fragment)
+	fragment_extra_overhead = ntohs(udph->len) - l4_len + sizeof(struct ndpi_iphdr);
 #endif
     } else {
       /* Packet too short: this is a faked packet */
@@ -6205,14 +6206,16 @@ void NetworkInterface::sumStats(TcpFlowStats *_tcpFlowStats,
     pktStats.sum(_pktStats), tcpPacketStats.sum(_tcpPacketStats),
     discardedProbingStats.sum(_discardedProbingStats), syslogStats.sum(_syslogStats);
 
-  if(ndpiStats)
+  if(ndpiStats && _ndpiStats)
     ndpiStats->sum(_ndpiStats);
-  if(dscpStats)
+
+  if(dscpStats && _dscpStats)
     dscpStats->sum(_dscpStats);
 
-  if(_downloadStats)
+  if(download_stats && _downloadStats)
     download_stats->sum(_downloadStats);
-  if(_uploadStats)
+
+  if(upload_stats && _uploadStats)
     upload_stats->sum(_uploadStats);
 }
 
@@ -6334,7 +6337,7 @@ void NetworkInterface::lua(lua_State *vm) {
 
   bcast_domains->lua(vm);
 
-  if(ntop->getPrefs()->are_top_talkers_enabled())
+  if(top_sites && ntop->getPrefs()->are_top_talkers_enabled())
     top_sites->lua(vm, (char *) "sites", (char *) "sites.old");
 
   luaAnomalies(vm);
@@ -7031,7 +7034,7 @@ static bool virtual_http_hosts_walker(GenericHashEntry *node, void *data, bool *
 
 /* **************************************** */
 
-bool NetworkInterface::alert_store_query(lua_State *vm, const char * const sql) {
+bool NetworkInterface::alert_store_query(lua_State *vm, const char * sql) {
   if(!alertStore)
     return false;
 
@@ -9397,7 +9400,8 @@ void NetworkInterface::updateSitesStats() {
 }
 
 void NetworkInterface::incrVisitedWebSite(char *hostname) {
-  top_sites->incrVisitedData(hostname, 1);
+  if(top_sites)
+    top_sites->incrVisitedData(hostname, 1);
 }
 
 /* *************************************** */

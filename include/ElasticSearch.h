@@ -43,7 +43,7 @@ class ElasticSearch : public DB {
   ~ElasticSearch();
 
   inline bool atleast_version_6() {
-    const char * const ver = get_es_version();
+    const char * ver = get_es_version();
     return ver && strcmp(ver, "6") >= 0;
   };
   void pushEStemplate();

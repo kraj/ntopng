@@ -107,8 +107,9 @@ class Host : public GenericHashEntry, public HostAlertableEntity, public Score, 
   bool is_dhcp_host;
 
   /* Alert exclusion handling */
-  HostAlertBitmap disabled_host_alerts;
-  Bitmap128 disabled_flow_alerts;
+#ifdef NTOPNG_PRO
+  AlertExclusionsInfo alert_exclusions;
+#endif
   time_t disabled_alerts_tstamp;
 
   void initialize(Mac *_mac, VLANid _vlan_id, u_int16_t observation_point_id);
@@ -120,7 +121,7 @@ class Host : public GenericHashEntry, public HostAlertableEntity, public Score, 
   void get_quota(u_int16_t protocol, u_int64_t *bytes_quota, u_int32_t *secs_quota, u_int32_t *schedule_bitmap, bool *is_category);
 #endif
   void lua_get_names(lua_State * const vm, char * const buf, ssize_t buf_size);
-  void luaStrTableEntryLocked(lua_State * const vm, const char * const entry_name, const char * const entry);
+  void luaStrTableEntryLocked(lua_State * const vm, const char * entry_name, const char * entry);
   char* printMask(char *str, u_int str_len) { return ip.printMask(str, str_len, isLocalHost()); };
   void freeHostNames();
   void resetHostNames();
@@ -444,16 +445,16 @@ class Host : public GenericHashEntry, public HostAlertableEntity, public Score, 
   void checkBroadcastDomain();
   bool hasAnomalies() const;
   void housekeep(time_t t); /* Virtual method, called in the datapath from GenericHash::purgeIdle */
-  virtual void inlineSetOSDetail([[maybe_unused ]] const char *detail) { }
-  virtual const char* getOSDetail([[maybe_unused ]] char * const buf, [[maybe_unused ]] ssize_t buf_len);
-  void offlineSetTLSName(const char * const n);
-  void offlineSetHTTPName(const char * const n);
-  void offlineSetNetbiosName(const char * const n);
-  void offlineSetSSDPLocation(const char * const url);
+  virtual void inlineSetOSDetail([[maybe_unused]] const char *detail) { }
+  virtual const char* getOSDetail(char * const buf, ssize_t buf_len);
+  void offlineSetTLSName(const char * n);
+  void offlineSetHTTPName(const char * n);
+  void offlineSetNetbiosName(const char * n);
+  void offlineSetSSDPLocation(const char * url);
   void offlineSetMDNSInfo(char * const s);
-  void offlineSetMDNSName(const char * const n);
-  void offlineSetMDNSTXTName(const char * const n);
-  void setResolvedName(const char * const resolved_name);
+  void offlineSetMDNSName(const char * n);
+  void offlineSetMDNSTXTName(const char * n);
+  void setResolvedName(const char * resolved_name);
   inline Fingerprint* getJA3Fingerprint()   { return(&fingerprints.ja3);   }
   inline Fingerprint* getHASSHFingerprint() { return(&fingerprints.hassh); }
 
@@ -498,6 +499,11 @@ class Host : public GenericHashEntry, public HostAlertableEntity, public Score, 
   virtual u_int32_t getDNSContactCardinality()    { return(0); }
   virtual u_int32_t getSMTPContactCardinality()   { return(0); }
 
+#ifdef NTOPNG_PRO
+  /* Alert Exclusions */
+  inline AlertExclusionsInfo* getAlertExclusions() { return(&alert_exclusions); }
+#endif
+  
   /* Enqueues an alert to all available host recipients. */
   bool enqueueAlertToRecipients(HostAlert *alert, bool released);
   void alert2JSON(HostAlert *alert, bool released, ndpi_serializer *serializer);
@@ -518,6 +524,7 @@ class Host : public GenericHashEntry, public HostAlertableEntity, public Score, 
   inline u_int32_t upper_bound_score_anomaly(bool as_client) { return(stats->upper_bound_score_anomaly(as_client)); }
 
   inline void inc_num_blacklisted_flows(bool as_client) { if(as_client) num_blacklisted_flows.as_client++; else num_blacklisted_flows.as_server++; }
+  
 };
 
 #endif /* _HOST_H_ */

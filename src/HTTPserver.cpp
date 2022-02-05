@@ -161,8 +161,8 @@ static void generate_session_id(char *buf, const char *user, const char *group) 
 /* ****************************************** */
 
 // Create a new session generating a Session ID that can be used as Cookie
-static void create_session(const char * const user,
-			   const char * const group,
+static void create_session(const char * user,
+			   const char * group,
 			   bool localuser,
 			   char *session_id,
 			   u_int session_id_size,
@@ -190,16 +190,15 @@ static void create_session(const char * const user,
 
 // Create a new session and set the session Cookie
 static void set_session_cookie(const struct mg_connection * const conn,
-			       const char * const user,
-			       const char * const group,
+			       const char * user,
+			       const char * group,
 			       bool localuser,
-			       const char * const referer) {
+			       const char * referer) {
   char session_id[64], session_key[32];
   u_int session_duration;
 
   if(!strcmp(mg_get_request_info((struct mg_connection*)conn)->uri, "/metrics")
      || !strncmp(mg_get_request_info((struct mg_connection*)conn)->uri, LIVE_TRAFFIC_URL, strlen(LIVE_TRAFFIC_URL))
-     || !strncmp(mg_get_request_info((struct mg_connection*)conn)->uri, GRAFANA_URL, strlen(GRAFANA_URL))
      || !strncmp(mg_get_request_info((struct mg_connection*)conn)->uri, POOL_MEMBERS_ASSOC_URL, strlen(POOL_MEMBERS_ASSOC_URL)))
     return;
 
@@ -308,20 +307,7 @@ static int checkInformativeCaptive(const struct mg_connection *conn,
 
 /* ****************************************** */
 
-static int checkGrafana(const struct mg_connection *conn,
-			const struct mg_request_info *request_info) {
-
-  if(!strcmp(request_info->request_method, "OPTIONS") /* Allow for CORS inflight requests */
-    && !strncmp(request_info->uri, GRAFANA_URL, strlen(GRAFANA_URL)))
-    /* Success */
-    return(1);
-
-  return(0);
-}
-
-/* ****************************************** */
-
-static int isWhitelistedURI(const char * const uri) {
+static int isWhitelistedURI(const char * uri) {
   /* URL whitelist */
   if((!strcmp(uri,    LOGIN_URL))
      || (!strcmp(uri, AUTHORIZE_URL))
@@ -448,12 +434,10 @@ static int getAuthorizedUser(struct mg_connection *conn,
       }
     }
   }
-
-  if(checkGrafana(conn, request_info) == 1) {
-    return(1);
-  }
-
-  if(user_login_disabled) {
+ 
+  
+  if((!strcmp(request_info->uri, CAPTIVE_PORTAL_LOGOUT_URL))
+     || (user_login_disabled)) {
     strncpy(username, NTOP_NOLOGIN_USER, NTOP_USERNAME_MAXLEN);
     username[NTOP_USERNAME_MAXLEN - 1] = '\0';
     return(1);
@@ -650,7 +634,7 @@ static char* make_referer(struct mg_connection *conn, char *buf, int bufsize) {
 // we came from, so that after the authorization we could redirect back.
 static void redirect_to_login(struct mg_connection *conn,
                               const struct mg_request_info *request_info,
-			      const char * const referer, const char * const reason) {
+			      const char * referer, const char * reason) {
   char session_id[NTOP_SESSION_ID_LENGTH], buf[128], session_key[32];
   char *referer_enc = NULL, *reason_enc = NULL;
 
@@ -1248,7 +1232,7 @@ static int handle_lua_request(struct mg_connection *conn) {
      || (strncmp(request_info->uri, "/plugins/", 9) == 0)
      || (strcmp(request_info->uri, "/") == 0)) {
     /* Lua Script */
-    char path[255] = { 0 }, uri[2048];
+    char path[300] = { 0 }, uri[2048];
     struct stat buf;
     bool found;
 
@@ -1370,9 +1354,10 @@ static int handle_lua_request(struct mg_connection *conn) {
        ) {
       return(redirect_to_error_page(conn, request_info, "forbidden", NULL, NULL));
     } else {
-      char path[256];
+      char path[MAX_PATH+8];
       struct stat s;
-      snprintf(path, sizeof(path)-1, "%s%s",
+      
+      snprintf(path, sizeof(path), "%s%s",
 	       ntop->get_HTTPserver()->get_docs_dir(), request_info->uri);
       
       if(stat(path, &s) == 0) {
@@ -1430,7 +1415,7 @@ void HTTPserver::parseACL(char * const acl, u_int acl_len) {
   char *net, *net_ctx, *slash, *sign, *acl_key;
   u_int32_t mask, bits, num = 0;
   struct in_addr ipaddr;
-  const char * const comma = ",";
+  const char * comma = ",";
 
   if(!acl || !acl_len)
     return;
@@ -1559,9 +1544,15 @@ HTTPserver::HTTPserver(const char *_docs_dir, const char *_scripts_dir) {
   /* Build the URL rewrite pattern, required to handle the additional
    * httpdocs directory for the plugins. Need to configure the rewrite for both the
    * plugins0 and plugins1 directories. See plugins_utils.getHttpdocsDir */
+
+  /* Silence  format-truncation warning */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation"
+
   snprintf(plugins_httpdocs_rewrite, sizeof(plugins_httpdocs_rewrite),
 	   "/plugins0_httpdocs/=%s/httpdocs/,/plugins1_httpdocs/=%s/httpdocs/",
 	   ntop->get_plugins0_dir(), ntop->get_plugins1_dir());
+#pragma GCC diagnostic pop
   
   /* HTTP options */
   addHTTPOption("listening_ports", ports);

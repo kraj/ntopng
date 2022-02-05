@@ -885,7 +885,6 @@ static int ntop_getservbyport(lua_State* vm) {
 
 static int ntop_msleep(lua_State* vm) {
   u_int ms_duration, max_duration = 60000 /* 1 min */;
-  struct timespec ts;
 
   ntop->getTrace()->traceEvent(TRACE_DEBUG, "%s() called", __FUNCTION__);
 
@@ -894,16 +893,11 @@ static int ntop_msleep(lua_State* vm) {
 
   if(ms_duration > max_duration) ms_duration = max_duration;
 
-  if(ms_duration >= 1000) {
-    ts.tv_sec = ms_duration / 1000ul;
-    ms_duration -= 1000*ts.tv_sec;
-  } else
-    ts.tv_sec = 0;
-
-  ts.tv_nsec = ms_duration * 1000;
-
-  if(nanosleep(&ts, NULL) != 0)
-    ntop->getTrace()->traceEvent(TRACE_WARNING, "nanosleep error: %s", strerror(errno));
+#ifdef WIN32
+  win_usleep(ms_duration * 1000);
+#else
+  usleep(ms_duration * 1000);
+#endif
 
   lua_pushnil(vm);
   return(ntop_lua_return_value(vm, __FUNCTION__, CONST_LUA_OK));
@@ -2515,7 +2509,7 @@ static int ntop_resolve_address(lua_State* vm) {
 
 /* ****************************************** */
 
-void lua_push_str_table_entry(lua_State *L, const char * const key, const char * const value) {
+void lua_push_str_table_entry(lua_State *L, const char * key, const char * value) {
   if(L) {
     lua_pushstring(L, key);
     lua_pushstring(L, value);
@@ -3134,6 +3128,11 @@ static int ntop_get_info(lua_State* vm) {
   lua_push_uint32_table_entry(vm, "http_port", ntop->getPrefs()->get_http_port());
   lua_push_uint32_table_entry(vm, "https_port", ntop->getPrefs()->get_https_port());
 
+  lua_push_str_table_entry(vm, "tzname", tzname[0]);  /* Timezone name */     
+#ifdef linux
+  lua_push_int32_table_entry(vm, "timezone", timezone); /* Seconds west of UTC */
+#endif
+  
   if(verbose) {
     lua_push_str_table_entry(vm, "version.rrd", rrd_strversion());
     lua_push_str_table_entry(vm, "version.redis", ntop->getRedis()->getVersion());
@@ -3264,7 +3263,7 @@ static int ntop_is_local_interface_address(lua_State* vm) {
 /* ****************************************** */
 
 static int ntop_get_resolved_address(lua_State* vm) {
-  char *key, *tmp,rsp[256],value[64];
+  char *key, *tmp,rsp[256], value[280];
   Redis *redis = ntop->getRedis();
   VLANid vlan_id = 0;
   char buf[64];
@@ -4269,14 +4268,14 @@ static bool ntop_delete_old_rrd_files_recursive(const char *dir_name, time_t now
 /* ****************************************** */
 
 static int ntop_delete_old_rrd_files(lua_State *vm) {
-  char path[PATH_MAX];
+  char path[PATH_MAX+8];
   int older_than_seconds;
   time_t now = time(NULL);
 
   ntop->getTrace()->traceEvent(TRACE_DEBUG, "%s() called", __FUNCTION__);
 
   if(ntop_lua_check(vm, __FUNCTION__, 1, LUA_TSTRING) != CONST_LUA_OK) return(ntop_lua_return_value(vm, __FUNCTION__, CONST_LUA_ERROR));
-  strncpy(path, lua_tostring(vm, 1), sizeof(path));
+  strncpy(path, lua_tostring(vm, 1), sizeof(path)-1);
 
   if(ntop_lua_check(vm, __FUNCTION__, 2, LUA_TNUMBER) != CONST_LUA_OK) return(ntop_lua_return_value(vm, __FUNCTION__, CONST_LUA_ERROR));
   if((older_than_seconds = lua_tointeger(vm, 2)) < 0) return(ntop_lua_return_value(vm, __FUNCTION__, CONST_LUA_ERROR));

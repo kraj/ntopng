@@ -91,6 +91,8 @@ int main(int argc, char *argv[])
   bool has_view_all = false;
   FILE *fd;
   ThreadedActivity *boot_activity;  
+
+  tzset(); /* Init time and timezone */
   
 #ifdef WIN32
   initWinsock32();
@@ -159,6 +161,13 @@ int main(int argc, char *argv[])
   }
 #endif
  
+#ifndef WIN32
+  ntop->initPing();
+#endif
+
+  if(prefs->daemonize_ntopng())
+    ntop->daemonize();
+  
 #ifndef HAVE_NEDGE
   /* Force ZMQ interface creation */
   ntop->broadcastIPSMessage(NULL);
@@ -311,11 +320,6 @@ int main(int argc, char *argv[])
     exit(0);
   }
 
-  ntop->initPing();
-  
-  if(prefs->daemonize_ntopng())
-    ntop->daemonize();
-    
 #ifndef WIN32
   if(prefs->get_pid_path() != NULL) {
     FILE *fd;

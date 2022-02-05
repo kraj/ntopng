@@ -29,13 +29,15 @@ class Flow;
 class SQLiteAlertStore : virtual public AlertStore, public SQLiteStoreManager {
  private:
   bool store_opened, store_initialized;
-  int openStore();
 
+  int openStore();
+  int execFile(const char *path);
+  
  public:
   SQLiteAlertStore(int interface_id, const char *db_filename);
   ~SQLiteAlertStore();
 
-  bool query(lua_State *vm, const char * const query);
+  bool query(lua_State *vm, const char * query);
 
 };
 

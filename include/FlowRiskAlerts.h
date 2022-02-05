@@ -23,10 +23,8 @@
 #define _FLOW_RISK_ALERTS_H_
 
 #include "ntop_includes.h"
-
 class FlowRiskAlerts {
  private:
-  static const FlowAlertTypeExtended risk_enum_to_alert_type[NDPI_MAX_RISK];
   static bool isRiskUnhanlded(ndpi_risk_enum risk);
 
  public:
@@ -37,23 +35,12 @@ class FlowRiskAlerts {
       ndpi_risk2score(NDPI_SET_BIT(r, risk), &c, &s);
 
       return(c + s);
-    } else
-      return(0);
+    } 
+    return(0);
   }
   
-  static inline FlowAlertType getFlowRiskAlertType(ndpi_risk_enum risk) {
-    if(isRiskUnhanlded(risk))
-      return risk_enum_to_alert_type[NDPI_NO_RISK].alert_type;
-    else
-      return risk_enum_to_alert_type[risk].alert_type;
-  }
-  
-  static inline const char * getCheckName(ndpi_risk_enum risk) {
-    if(isRiskUnhanlded(risk))
-      return risk_enum_to_alert_type[NDPI_NO_RISK].alert_lua_name;
-    else
-      return risk_enum_to_alert_type[risk].alert_lua_name;
-  }
+  static FlowAlertType getFlowRiskAlertType(ndpi_risk_enum risk);  
+  static const char * getCheckName(ndpi_risk_enum risk);
   static void checkUnhandledRisks();
   static bool lua(lua_State* vm);
 };

@@ -119,10 +119,10 @@ class Mac : public GenericHashEntry, public SerializableElement {
   inline int16_t findAddress(AddressTree *ptree)        { return ptree ? ptree->findMac(mac) : -1;     };
   inline char* print(char *str, u_int str_len)          { return(Utils::formatMac(mac, str, str_len)); };
   void updateHostPool(bool isInlineCall, bool firstUpdate = false);
-  void inlineSetModel(const char * const m);
-  bool inlineSetFingerprint(const char * const f);
-  void inlineSetSSID(const char * const s);
-  void inlineSetDHCPName(const char * const dhcp_name);
+  void inlineSetModel(const char * m);
+  bool inlineSetFingerprint(const char * f);
+  void inlineSetSSID(const char * s);
+  void inlineSetDHCPName(const char * dhcp_name);
   inline u_int16_t get_host_pool() { return(host_pool_id); }
   inline const char* getFingerprint() { return(fingerprint); }
 

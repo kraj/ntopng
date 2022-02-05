@@ -156,7 +156,7 @@
                           let restText = " (" + (data.rsp[i].value[0][j].count).toFixed(1) + "%)";
                           if(data.rsp[i].value[0][j].count != 0 && data.rsp[i].value[0][j].count < 0.1){restText = " (< 0.1%)";}
 
-                          let a_tag = "<a class='tag-filter' data-tag-key='" + data.rsp[i].value[0][j].key + 
+                          let a_tag = "<a class='tag-filter dropdown-item' data-tag-key='" + data.rsp[i].value[0][j].key + 
                                       "' title='" + ( data.rsp[i].value[0][j].title || data.rsp[i].value[0][j].value) + 
                                       "' data-tag-value='" + data.rsp[i].value[0][j].value + 
                                       "' data-tag-label='" + data.rsp[i].value[0][j].label + 
@@ -167,8 +167,14 @@
                       }
                   }
                   if (menuOptions.length > 0){
-		      let menu = '<div class="btn-group dropdown"> <button class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown" type="button" title="'+ data.rsp[i].tooltip + '">' + data.rsp[i].label +'</button><ul class="dropdown-menu scrollable-dropdown">' + menuOptions.join("") + '</ul></div>';
-		      menuContent.push(menu);
+                    let menu = `<div class="btn-group dropdown">
+                                    <button class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown" type="button" title="`+ data.rsp[i].tooltip + `">` + data.rsp[i].label +
+                                   `</button>
+                                    <ul class="dropdown-menu">`
+                                        + menuOptions.join("") + 
+                                   `</ul>
+                                </div>`;
+                    menuContent.push(menu);
                   }
               }
           }
@@ -228,11 +234,13 @@
             $(`#{{ datatable.name }}-query-time .seconds`).text((sec < 0.01) ? '< 0.01' : NtopUtils.ffloat(sec)); // The time is in sec
             $(`#{{ datatable.name }}-query`).show();
             $(`#{{ datatable.name }}-query`).prop('title', response.rsp.stats.query);
+            {% if show_tot_records then %}
             if(response.rsp.stats.num_records_processed !== undefined) {
                 const num_records_processed = response.rsp.stats.num_records_processed;
                 $(`#{{ datatable.name }}-tot_records`).show();
                 $(`#{{ datatable.name }}-tot_records .records`).text(num_records_processed);
             }
+            {% end %}
         }
     }
 
@@ -252,7 +260,7 @@
 
         let columns = [];
         {% if datatable.columns_js then %}
-            columns = {* datatable.columns_js *};
+        columns = {* datatable.columns_js *};
         {% end %}
 
         /* Actions Column */
@@ -372,9 +380,6 @@ $(document).ready(function(){
             }
         },
         drawCallback: () => {
-            // remove fast forward button from the table
-            $("#ndpi_table_last").remove();
-
             updateDownloadButton();
         },
         lengthMenu: [length_array, length_array],
@@ -382,16 +387,10 @@ $(document).ready(function(){
         columns: loadColumns(),
     });
 
-    {% if datatable.show_vlan or datatable.show_non_pkts_if_columns then %}
-    let table = $(`ndpi_table`).DataTable(config);
-    table.destroy();
-    {% end %}
-
     {% if datatable.refresh_rate and datatable.refresh_rate > 0 then %}
     intervalId = setInterval(function() { onRangePickerChange(true, true); }, {{ datatable.refresh_rate }});
     {% end %}
     $table = $(`#{{ datatable.name }}`).DataTable(config);
-
     
     DataTableUtils.addToggleColumnsDropdown($table, function(col, visible) {
         $table.ajax.reload();

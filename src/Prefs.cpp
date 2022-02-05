@@ -1939,7 +1939,7 @@ void Prefs::add_default_interfaces() {
 
 /* *************************************** */
 
-void Prefs::bind_http_to_address(const char * const addr1, const char * const addr2) {
+void Prefs::bind_http_to_address(const char * addr1, const char * addr2) {
   if(http_binding_address1)  free(http_binding_address1);
   http_binding_address1 = strdup(addr1);
 
@@ -1947,7 +1947,7 @@ void Prefs::bind_http_to_address(const char * const addr1, const char * const ad
   http_binding_address2 = strdup(addr2);
 }
 
-void Prefs::bind_https_to_address(const char * const addr1, const char * const addr2) {
+void Prefs::bind_https_to_address(const char * addr1, const char * addr2) {
   if(https_binding_address1) free(https_binding_address1);
   https_binding_address1 = strdup(addr1);
 
@@ -1992,6 +1992,10 @@ void Prefs::lua(lua_State* vm) {
   lua_push_bool_table_entry(vm, "is_dump_flows_to_es_enabled", dump_flows_on_es);
   lua_push_bool_table_entry(vm, "is_dump_flows_to_syslog_enabled", dump_flows_on_syslog);
   lua_push_bool_table_entry(vm, "is_dump_flows_to_clickhouse_enabled", use_clickhouse);
+
+#ifdef HAVE_NEDGE
+  lua_push_bool_table_entry(vm, "is_mac_based_captive_portal", mac_based_captive_portal);
+#endif
 
   lua_push_uint64_table_entry(vm, "http.port", get_http_port());
 
@@ -2258,7 +2262,7 @@ void Prefs::validate() {
 
 /* *************************************** */
 
-const char * const Prefs::getCaptivePortalUrl() {
+const char * Prefs::getCaptivePortalUrl() {
 #ifdef NTOPNG_PRO
   if(isInformativeCaptivePortalEnabled())
     return CAPTIVE_PORTAL_INFO_URL;
@@ -2269,7 +2273,7 @@ const char * const Prefs::getCaptivePortalUrl() {
 
 /* *************************************** */
 
-void Prefs::setIEC104AllowedTypeIDs(const char * const protos) {
+void Prefs::setIEC104AllowedTypeIDs(const char * protos) {
   char *p, *buf, *tmp;
   
   if(!protos) return;

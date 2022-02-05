@@ -272,6 +272,7 @@ function sendHTTPHeaderIfName(mime, ifname, maxage, content_disposition, extra_h
    local lines = {
       'Cache-Control: max-age=0, no-cache, no-store',
       'Server: ntopng '..info["version"]..' ['.. info["platform"]..']',
+      'Set-Cookie: tzname=' .. info.tzname .. '; path=/' .. cookie_attr,
       'Pragma: no-cache',
       'X-Frame-Options: DENY',
       'X-Content-Type-Options: nosniff',
@@ -288,6 +289,10 @@ function sendHTTPHeaderIfName(mime, ifname, maxage, content_disposition, extra_h
       lines[#lines + 1] = 'Set-Cookie: ifname=' .. ifname .. '; path=/' .. cookie_attr
    end
 
+   if(info.timezone ~= nil) then
+      lines[#lines + 1] = 'Set-Cookie: timezone=' .. info.timezone .. '; path=/' .. cookie_attr
+   end
+   
    if(content_disposition ~= nil) then
       lines[#lines + 1] = 'Content-Disposition: '..content_disposition
    end
@@ -4264,6 +4269,16 @@ function areHostPoolsTimeseriesEnabled(ifid)
    return(ntop.isPro() and (ntop.getPref("ntopng.prefs.host_pools_rrd_creation") == "1"))
 end
 
+function getPoolName(pool_id)
+ if(pool_id == "0") then
+   return "Default"
+ else
+   local key = "ntopng.prefs.host_pools.details."..pool_id
+
+   return ntop.getHashCache(key, "name")
+ end
+end
+
 function areASTimeseriesEnabled(ifid)
    return(ntop.getPref("ntopng.prefs.asn_rrd_creation") == "1")
 end
@@ -4735,6 +4750,12 @@ function addHTTPInfoToAlertDescr(msg, alert_json)
          msg = msg .. string.format(" [%s: %s]", 
             i18n("last_return_code"),
             alert_json["proto"]["http"]["last_return_code"])
+      end
+
+      if alert_json["proto"]["http"]["last_user_agent"] then
+         msg = msg .. string.format(" [%s: %s]", 
+            i18n("last_user_agent"),  
+            alert_json["proto"]["http"]["last_user_agent"])
       end
 
       if alert_json["proto"]["http"]["last_url"] then

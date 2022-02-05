@@ -1559,6 +1559,29 @@ local known_parameters = {
    ["endpoint_conf_type"]     = validateUnquoted,
    ["cc"]                     = validateEmptyOr(validateSingleWord),
 
+-- NOTIFICATIONS ENDPOINT/RECIPIENT
+   ["discord_url"]       = { http_lint.webhookCleanup, http_lint.validateUnquoted },
+   ["discord_sender"]    = http_lint.validateUnquoted,
+   ["discord_username"]  = http_lint.validateEmptyOr(http_lint.validateSingleWord),
+
+   ["shell_script"] = http_lint.validateEmptyOr(http_lint.validateSingleWord),
+   ["shell_script_options"] = http_lint.validateEmptyOr(http_lint.validateUnquoted),
+
+   ["syslog_alert_format"] = http_lint.validateEmptyOr(http_lint.validateSyslogFormat),
+   ["syslog_protocol"]  = http_lint.validateEmptyOr(http_lint.validateChoiceInline({"tcp", "udp", ""})),
+   ["syslog_host"]  = http_lint.validateEmptyOr(http_lint.validateHost),
+   ["syslog_port"]  = http_lint.validateEmptyOr(http_lint.validatePort),
+
+   ["telegram_channel"] = http_lint.validateEmptyOr(http_lint.validateSingleWord),
+   ["telegram_token"]   = http_lint.validateEmptyOr(http_lint.validateSingleWord),
+
+   ["fail2ban_jail"]     = http_lint.validateEmptyOr(http_lint.validateSingleWord),
+
+   ["elasticsearch_url"]       = { http_lint.webhookCleanup, http_lint.validateUnquoted },
+   ["elasticsearch_username"]  = http_lint.validateEmptyOr(http_lint.validateSingleWord),
+   ["elasticsearch_password"]  = http_lint.validateEmptyOr(http_lint.validateSingleWord),
+   ["elasticsearch_index"]     = http_lint.validateEmptyOr(http_lint.validateSingleWord),
+
 -- POOLS
    ["pool_members"]           = validateEmptyOr(validateListOfTypeInline(validateSingleWord)),
    ["recipients"]             = validateEmptyOr(validateListOfTypeInline(validateNumber)),
@@ -1581,6 +1604,8 @@ local known_parameters = {
    ["user"]                    = validateSingleWord,            -- The user ID
    ["pool"]                    = validateNumber,                -- A pool ID
    ["pool_id"]                 = validateNumber,                -- A pool ID
+   ["cli_host_pool_id"]        = validateNumber,                -- A pool ID
+   ["srv_host_pool_id"]        = validateNumber,                -- A pool ID
    ["direction"]               = validateDirection,             -- Sent or Received direction
    ["download"]                = validateBool,
    ["item"]                    = validateSingleWord,            -- Used by the Import/Export page to select the item to import/export
@@ -1665,6 +1690,8 @@ local known_parameters = {
    ["check_subdir"]            = validateSingleWord,
    ["script_key"]              = validateSingleWord,
    ["alert_key"]               = validateNumber,
+   ["flow_alert_key"]          = validateNumber,
+   ["host_alert_key"]          = validateNumber,
    ["alert_addr"]              = validateSingleWord,
    ["search_script"]           = validateSingleWord,
    ["field_alias"]             = validateListOfTypeInline(validateFieldAlias),
@@ -1673,6 +1700,9 @@ local known_parameters = {
 
    ["bytes"]                   = validateListOfTypeInline(validateFilters(validateNumber)),
    ["packets"]                 = validateListOfTypeInline(validateFilters(validateNumber)),
+
+   ["cli_host_pool_id"]        = validateListOfTypeInline(validateFilters(validateNumber)),
+   ["srv_host_pool_id"]        = validateListOfTypeInline(validateFilters(validateNumber)),
 
    -- Widget and Datasources
    ["ds_type"]                 = validateSingleWord,

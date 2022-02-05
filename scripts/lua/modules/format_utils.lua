@@ -187,9 +187,13 @@ end
 
 -- parse a SQL DATETIME date and convert to epoch
 function format_utils.parseDateTime(tstamp)
-  local year, month, day, hour, min, sec = tstamp:match('^(%d+)-(%d+)-(%d+) (%d+):(%d+):(%d+)$')
-  local epoch = os.time({month=month, day=day, year=year, hour=hour, min=min, sec=sec})
-  return epoch
+   if tstamp and not isEmptyString(tstamp) then
+      local year, month, day, hour, min, sec = tstamp:match('^(%d+)-(%d+)-(%d+) (%d+):(%d+):(%d+)$')
+      local epoch = os.time({month=month, day=day, year=year, hour=hour, min=min, sec=sec})
+      return epoch
+   end
+
+   return ""
 end
 
 -- format an epoch using ISO 8601 format
@@ -387,7 +391,7 @@ function format_utils.formatFullAddressCategory(host)
       end
       
       if(host["broadcast_domain_host"] == true) then
-         addr_category = addr_category .. " <span class='badge bg-info'><i class='fas fa-sitemap' title='"..i18n("hosts_stats.label_broadcast_domain_host").."'></i></span>"
+         addr_category = addr_category .. " <span class='badge bg-info' style='cursor: help;'><i class='fas fa-sitemap' title='"..i18n("hosts_stats.label_broadcast_domain_host").."'></i></span>"
       end
       
       if(host["privatehost"] == true) then 

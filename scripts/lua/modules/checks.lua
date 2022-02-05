@@ -81,10 +81,18 @@ local ALL_HOOKS_CONFIG_KEY = "all"
 local CONFIGSET_KEY = "ntopng.prefs.checks.configset_v1" -- Keep in sync with ntop_defines.h CHECKS_CONFIG
 checks.DEFAULT_CONFIGSET_ID = 0
 
+checks.HOST_SUBDIR_NAME = "host"
+checks.FLOW_SUBDIR_NAME = "flow"
+checks.INTERFACE_SUBDIR_NAME = "interface"
+checks.NETWORK_SUBDIR_NAME = "network"
+checks.SNMP_DEVICE_SUBDIR_NAME = "snmp_device"
+checks.SYSTEM_SUBDIR_NAME = "system"
+checks.SYSLOG_SUBDIR_NAME = "syslog"
+
 -- NOTE: the subdir id must be unique
 local available_subdirs = {
    {
-      id = "host",
+      id = checks.HOST_SUBDIR_NAME,
       label = "hosts",
       pools = "host_pools",
       filter = {
@@ -98,7 +106,7 @@ local available_subdirs = {
 	 },
       },
    }, {
-      id = "interface",
+      id = checks.INTERFACE_SUBDIR_NAME,
       label = "interfaces",
       pools = "interface_pools",
       filter = {
@@ -126,7 +134,7 @@ local available_subdirs = {
 	 },
       },
    }, {
-      id = "network",
+      id = checks.NETWORK_SUBDIR_NAME,
       label = "networks",
       pools = "local_network_pools",
       filter = {
@@ -154,7 +162,7 @@ local available_subdirs = {
 	 },
       },
    }, {
-      id = "snmp_device",
+      id = checks.SNMP_DEVICE_SUBDIR_NAME,
       label = "host_details.snmp",
       pools = "snmp_device_pools",
       filter = {
@@ -182,7 +190,7 @@ local available_subdirs = {
 	 },
       },     
    }, {
-      id = "flow",
+      id = checks.FLOW_SUBDIR_NAME,
       label = "flows",
       -- User script execution filters (field names are those that arrive from the C Flow.cpp)
       filter = {
@@ -197,10 +205,10 @@ local available_subdirs = {
       },
       -- No pools for flows
    }, {
-      id = "system",
+      id = checks.SYSTEM_SUBDIR_NAME,
       label = "system",
    }, {
-      id = "syslog",
+      id = checks.SYSLOG_SUBDIR_NAME,
       label = "Syslog",
    }
 }
@@ -360,23 +368,15 @@ function checks.getSubdirectoryPath(script_type, subdir)
    local prefix = plugins_utils.getRuntimePath() .. "/callbacks"
    local path
 
-   if subdir == "host" or subdir == "flow" then
-      -- host and flow have their callbacks defined under modules/ and implemented in C++
-      path = string.format("%s/scripts/lua/modules/check_definitions/%s", dirs.installdir, subdir)
-   elseif not isEmptyString(subdir) and subdir ~= "." then
-      path = string.format("%s/%s/%s", prefix, script_type.parent_dir, subdir)
-   else
-      path = string.format("%s/%s", prefix, script_type.parent_dir)
-   end
+   -- Checks standard path
+   path = string.format("%s/scripts/lua/modules/check_definitions/%s", dirs.installdir, subdir)
 
    res[#res + 1] = os_utils.fixPath(path)
 
    -- Add pro check_definitions if necessary
    if ntop.isPro() then
-      if subdir == "flow" or subdir == "host" then
-	 local pro_path = string.format("%s/pro/scripts/lua/modules/check_definitions/%s", dirs.installdir, subdir)
-	 res[#res + 1] = os_utils.fixPath(pro_path)
-      end
+      local pro_path = string.format("%s/pro/scripts/lua/modules/check_definitions/%s", dirs.installdir, subdir)
+      res[#res + 1] = os_utils.fixPath(pro_path)
    end
 
    return res
@@ -699,7 +699,7 @@ local function loadAndCheckScript(mod_fname, full_path, plugin, script_type, sub
       return(nil)
    end
 
-   if(subdir ~= "flow" and subdir ~= "host" and table.empty(check.hooks)) then
+   if(subdir ~= "flow" and subdir ~= "host" and subdir ~= "interface" and table.empty(check.hooks)) then
       traceError(TRACE_WARNING, TRACE_CONSOLE, string.format("No 'hooks' defined in user script '%s', skipping", mod_fname))
       return(nil)
    end
@@ -767,6 +767,23 @@ end
 
 -- ##############################################
 
+-- This function return the edition and key of the check
+local function get_check_info(dir, fname)
+   local edition = "community"
+
+   if string.find(dir, "enterprise_l") then
+      edition = "enterprise_l"
+   elseif string.find(dir, "enterprise_m") then
+      edition = "enterprise_m"
+   elseif string.find(dir, "pro") then
+      edition = "pro"
+   end
+
+   return { edition = edition, key = fname }
+end
+
+-- ##############################################
+
 -- @brief Get a table with all loadable checks
 -- @param script_type one of checks.script_types
 -- @param subdir the modules subdir. *NOTE* this must be unique as it is used as a key.
@@ -778,23 +795,22 @@ local function get_loadable_checks(script_type, subdir)
    for _, checks_dir in pairs(check_dirs) do
       for fname in pairs(ntop.readdir(checks_dir)) do
          if string.ends(fname, ".lua") then
-	    local mod_fname = string.sub(fname, 1, string.len(fname) - 4)
-	    local full_path = os_utils.fixPath(checks_dir .. "/" .. fname)
-	    local plugin = plugins_utils.getUserScriptPlugin(full_path)
-
-	    if not plugin then
-	       --[[ host and flow don't have plugins, they are implemented in C++ so we call the C++ method to get their information --]]
-	       if subdir == "host" then
-		  plugin = ntop.getHostCheckInfo(mod_fname)
-	       elseif subdir == "flow" then
-		  plugin = ntop.getFlowCheckInfo(mod_fname)
-	       else
-		  traceError(TRACE_WARNING, TRACE_CONSOLE, string.format("Skipping unknown user script '%s'", mod_fname))
-	       end
-	    end
-
-	    loadable_checks[mod_fname] = {full_path = full_path, plugin = plugin}
-	 end
+            local mod_fname = string.sub(fname, 1, string.len(fname) - 4)
+            local full_path = os_utils.fixPath(checks_dir .. "/" .. fname)
+            local check_info
+            
+            -- Getting check info, like edition and key
+            if subdir == "host" then
+               check_info = ntop.getHostCheckInfo(mod_fname)
+            elseif subdir == "flow" then
+               check_info = ntop.getFlowCheckInfo(mod_fname)
+            else
+               check_info = get_check_info(checks_dir, fname)
+            end
+            
+            -- Add the script to the loadable checks
+            loadable_checks[mod_fname] = {full_path = full_path, plugin = check_info}
+	      end
       end
    end
 
@@ -2300,12 +2316,13 @@ local function runSystemChecks(granularity, checks_var, do_trace)
    -- The "process:resident_memory" must always be written as it has the
    -- is_critical_ts flag set.
 
+   local info = interface.getStats()
    local when = os.time()
   
    for mod_key, hook_fn in pairs(checks_var.available_modules.hooks[granularity]) do
       local check = checks_var.available_modules.modules[mod_key]
       local conf = checks.getTargetHookConfig(checks_var.system_config, check, granularity)
-   
+      
       if(conf.enabled) then
          alerts_api.invokeScriptHook(
       check, checks_var.configset, hook_fn,
@@ -2315,6 +2332,7 @@ local function runSystemChecks(granularity, checks_var, do_trace)
          check_config = conf.script_conf,
          check = check,
          when = when,
+         entity_info = info,
          ts_enabled = checks_var.system_ts_enabled,
          })
       end

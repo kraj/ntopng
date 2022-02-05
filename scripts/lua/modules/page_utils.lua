@@ -103,7 +103,7 @@ page_utils.menu_entries = {
     -- exporters
     event_exporters       = {key = "event_exporters", i18n_title = "event_exporters.event_exporters", section = "collection"},
     sflow_exporters       = {key = "sflow_exporters", i18n_title = "flows_page.sflow_devices", section = "collection"},
-    exporters             = {key = "exporters", i18n_title = "flow_devices.exporters", section = "collection", help_link = "https://www.ntop.org"},
+    exporters             = {key = "exporters", i18n_title = "flow_devices.flow_exporters", section = "collection", help_link = "https://www.ntop.org"},
     observation_points    = {key = "observation_points", i18n_title = "flow_devices.observation_points", section = "collection", help_link = "https://www.ntop.org"},
 
    -- Map
@@ -827,7 +827,7 @@ function page_utils.generate_info_stats()
    else
       return ([[
          <a href=']].. ntop.getHttpPrefix() ..[[/lua/if_stats.lua'>
-            <span style='display: none;' class="network-load-chart-total">0,0,0,0,0,0,0,0,0,0</span>
+            <span style='display: none;' class="network-load-chart-total">0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0</span>
             <span class="text-end chart-total-text"></span>
          </a>
       ]])

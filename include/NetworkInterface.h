@@ -461,7 +461,6 @@ class NetworkInterface : public NetworkInterfaceAlertableEntity {
   inline char* get_ndpi_proto_breed_name(u_int id) { return(ndpi_get_proto_breed_name(get_ndpi_struct(), ndpi_get_proto_breed(get_ndpi_struct(), id))); };
   inline char* get_ndpi_full_proto_name(ndpi_protocol protocol, char *buf, u_int buf_len) const { return(ndpi_protocol2name(get_ndpi_struct(), protocol, buf, buf_len)); }
   inline u_int get_flow_size()                 { return(ndpi_detection_get_sizeof_ndpi_flow_struct()); };
-  inline u_int get_size_id()                   { return(ndpi_detection_get_sizeof_ndpi_id_struct());   };
   inline char* get_name() const                { return(ifname);                                       };
   inline char* get_description() const         { return(ifDescription);                                };
   inline int  get_id() const                   { return(id);                                           };
@@ -771,7 +770,7 @@ class NetworkInterface : public NetworkInterfaceAlertableEntity {
   inline void setIdleState(bool new_state)         { is_idle = new_state;  };
   inline StatsManager  *getStatsManager()          { return statsManager;  };
   AlertsQueue* getAlertsQueue() const;
-  bool alert_store_query(lua_State *vm, const char * const sql);
+  bool alert_store_query(lua_State *vm, const char * sql);
 
   void listHTTPHosts(lua_State *vm, char *key);
 #ifdef NTOPNG_PRO

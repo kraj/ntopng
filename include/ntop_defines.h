@@ -117,8 +117,9 @@
 #define ZMQ_MSG_VERSION           2
 #define ZMQ_MSG_VERSION_TLV       3
 #define LOGIN_URL                 "/lua/login.lua"
-#define LOGOUT_URL                "/lua/logout.lua"
+#define LOGOUT_URL                "/lua/ntopng_logout.lua"
 #define CAPTIVE_PORTAL_URL        "/lua/captive_portal.lua"
+#define CAPTIVE_PORTAL_LOGOUT_URL "/lua/logout.lua"
 #define CAPTIVE_PORTAL_INFO_URL   "/lua/info_portal.lua"
 #define PLEASE_WAIT_URL           "/lua/please_wait.lua"
 #define AUTHORIZE_URL             "/authorize.html"
@@ -127,7 +128,6 @@
 #define KINDLE_WIFISTUB_URL       "/kindle-wifi/wifistub.html" /* Kindle */
 #define HOTSPOT_DETECT_LUA_URL    "/lua/hotspot-detect.lua"
 #define CHANGE_PASSWORD_ULR       "/lua/change_password.lua"
-#define GRAFANA_URL               "/lua/modules/grafana"
 #define LIVE_TRAFFIC_URL          "/lua/rest/v2/get/pcap/live_traffic.lua"
 #define POOL_MEMBERS_ASSOC_URL    "/lua/admin/manage_pool_members.lua"
 #define REST_API_PREFIX           "/lua/rest/"
@@ -914,6 +914,7 @@
 #define STATS_MANAGER_STORE_NAME             "top_talkers.db"
 
 #define ALERTS_STORE_SCHEMA_FILE_NAME        "alert_store_schema.sql"
+#define ALERTS_VIEW_STORE_SCHEMA_FILE_NAME   "alert_view_store_schema.sql"
 #define ALERTS_STORE_CA_SCHEMA_FILE_NAME     "alert_store_schema_clickhouse.sql"
 #define ALERTS_STORE_DB_FILE_NAME            "alert_store_v11.db"
 
