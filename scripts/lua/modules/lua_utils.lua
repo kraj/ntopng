@@ -1534,7 +1534,9 @@ end
 function getApplicationLabel(name)
   local icon = getApplicationIcon(name)
 
-  name = name:gsub("^%l", string.upper)
+  -- Do not convert to upper case, keep the nDPI case
+  --name = name:gsub("^%l", string.upper)
+
   return(icon.." "..shortenString(name, 12))
 end
 
@@ -4985,6 +4987,11 @@ function add_delete_obs_point_button()
 
    return button
 end   
+
+function print_copy_button(id, data)
+   print('<button style="" class="btn btn-sm border ms-1" data-placement="bottom" id="btn-copy-' .. id ..'" data="' .. data .. '"><i class="fas fa-copy"></i></button>')
+   print("<script>$('#btn-copy-" .. id .. "').click(function(e) { NtopUtils.copyToClipboard($(this).attr('data'), '" .. i18n('copied') .. "', '" .. i18n('request_failed_message') .. "', $(this));});</script>")   
+end
 
 --
 -- IMPORTANT
