@@ -19,76 +19,88 @@
  *
  */
 
-
 #ifndef _RECIPIENTS_
 #define _RECIPIENTS_
 
 #include "ntop_includes.h"
 
 class Recipients {
- private:
+private:
   /* Per-recipient queues */
-  RecipientQueues* recipient_queues[MAX_NUM_RECIPIENTS];
+  RecipientQueues *recipient_queues[MAX_NUM_RECIPIENTS];
   Mutex m;
- public:
+
+public:
   Recipients();
   ~Recipients();
 
   /**
-  * @brief Dequeues a notification from a `recipient_id` queue, given a certain priority
-  * @param recipient_id An integer recipient identifier
-  * @param notification The dequeued notification
-  *
-  * @return Boolean, true if the dequeue was successful and `notification` is populated correctly, false otherwise
-  */
-  bool dequeue(u_int16_t recipient_id, RecipientNotificationPriority prio, AlertFifoItem *notification);
+   * @brief Dequeues a notification from a `recipient_id` queue, given a certain
+   * priority
+   * @param recipient_id An integer recipient identifier
+   * @param notification The dequeued notification
+   *
+   * @return Boolean, true if the dequeue was successful and `notification` is
+   * populated correctly, false otherwise
+   */
+  bool dequeue(u_int16_t recipient_id, RecipientNotificationPriority prio,
+               AlertFifoItem *notification);
   /**
-  * @brief Enqueues a notification to a `recipient_id` queue, depending on the priority
-  * @param recipient_id An integer recipient identifier
-  * @param prio The priority of the notification
-  * @param notification The notification to be enqueued
-  *
-  * @return True if the enqueue succeeded, false otherwise
-  */
-  bool enqueue(u_int16_t recipient_id, RecipientNotificationPriority prio, const AlertFifoItem* const notification);
+   * @brief Enqueues a notification to a `recipient_id` queue, depending on the
+   * priority
+   * @param recipient_id An integer recipient identifier
+   * @param prio The priority of the notification
+   * @param notification The notification to be enqueued
+   *
+   * @return True if the enqueue succeeded, false otherwise
+   */
+  bool enqueue(u_int16_t recipient_id, RecipientNotificationPriority prio,
+               const AlertFifoItem *const notification);
   /**
-  * @brief Enqueues a notification to all available recipients
-  * @param prio The priority of the notification
-  * @param notification The notification to be enqueued
-  * @param alert_entity Indicates to enqueue the alert only to recipients responsible for `alert_entity` alerts
-  *
-  * @return True if the enqueue succeeded, false otherwise
-  */
-  bool enqueue(RecipientNotificationPriority prio, const AlertFifoItem* const notification, AlertEntity alert_entity);
+   * @brief Enqueues a notification to all available recipients
+   * @param prio The priority of the notification
+   * @param notification The notification to be enqueued
+   * @param alert_entity Indicates to enqueue the alert only to recipients
+   * responsible for `alert_entity` alerts
+   *
+   * @return True if the enqueue succeeded, false otherwise
+   */
+  bool enqueue(RecipientNotificationPriority prio,
+               const AlertFifoItem *const notification,
+               AlertEntity alert_entity);
   /**
-  * @brief Registers a recipient identified with `recipient_id` so its notification can be enqueued/dequeued
-  * @param recipient_id An integer recipient identifier
-  * @param minimum_severity The minimum severity for notifications to use this recipient
-  * @param enabled_categories A bitmap of notification categories to use this recipient
-  *
-  * @return
-  */
-  void register_recipient(u_int16_t recipient_id, AlertLevel minimum_severity, u_int8_t enabled_categories);
+   * @brief Registers a recipient identified with `recipient_id` so its
+   * notification can be enqueued/dequeued
+   * @param recipient_id An integer recipient identifier
+   * @param minimum_severity The minimum severity for notifications to use this
+   * recipient
+   * @param enabled_categories A bitmap of notification categories to use this
+   * recipient
+   *
+   * @return
+   */
+  void register_recipient(u_int16_t recipient_id, AlertLevel minimum_severity,
+                          u_int8_t enabled_categories);
   /**
-  * @brief Sets all recipients responsible for flow alerts
-  * @param flow_recipients A bitmap of recipient ids responsible for flows
-  *
-  * @return
-  */
+   * @brief Sets all recipients responsible for flow alerts
+   * @param flow_recipients A bitmap of recipient ids responsible for flows
+   *
+   * @return
+   */
   void set_flow_recipients(u_int64_t flow_recipients);
   /**
-  * @brief Sets all recipients responsible for host alerts
-  * @param host_recipients A bitmap of recipient ids responsible for hosts
-  *
-  * @return
-  */
+   * @brief Sets all recipients responsible for host alerts
+   * @param host_recipients A bitmap of recipient ids responsible for hosts
+   *
+   * @return
+   */
   void set_host_recipients(u_int64_t host_recipients);
   /**
-  * @brief Marks a recipient as deleted
-  * @param recipient_id An integer recipient identifier
-  *
-  * @return
-  */
+   * @brief Marks a recipient as deleted
+   * @param recipient_id An integer recipient identifier
+   *
+   * @return
+   */
   void delete_recipient(u_int16_t recipient_id);
   /**
    * @brief Returns status (drops and uses) of a given recipient
@@ -97,7 +109,7 @@ class Recipients {
    *
    * @return
    */
-  void lua(u_int16_t recipient_id, lua_State* vm);
+  void lua(u_int16_t recipient_id, lua_State *vm);
   /**
    * @brief Returns the last use (i.e., successful dequeue) of a given recipient
    * @param recipient_id An integer recipient identifier
@@ -106,7 +118,8 @@ class Recipients {
    */
   time_t last_use(u_int16_t recipient_id);
   /**
-   * @brief Checks whether there are notifications queued in any of the recipients
+   * @brief Checks whether there are notifications queued in any of the
+   * recipients
    *
    * @return true if there are not notifications enqueued, false otherwise
    */

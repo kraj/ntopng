@@ -41,7 +41,7 @@ typedef struct {
 } syslog_socket;
 
 class SyslogCollectorInterface : public SyslogParserInterface {
- private:
+private:
   char *endpoint;
   syslog_socket udp_socket;
   syslog_socket tcp_socket;
@@ -51,12 +51,14 @@ class SyslogCollectorInterface : public SyslogParserInterface {
     u_int32_t num_flows;
   } recvStats;
 
-  bool openSocket(syslog_socket *ss, const char *server_address, int server_port, int protocol);
+  bool openSocket(syslog_socket *ss, const char *server_address,
+                  int server_port, int protocol);
   void closeSocket(syslog_socket *ss, int protocol);
-  int  initFDSetsSocket(syslog_socket *ss, fd_set *read_fds, fd_set *write_fds, fd_set *except_fds, int protocol);
-  int  initFDSets(fd_set *read_fds, fd_set *write_fds, fd_set *except_fds);
+  int initFDSetsSocket(syslog_socket *ss, fd_set *read_fds, fd_set *write_fds,
+                       fd_set *except_fds, int protocol);
+  int initFDSets(fd_set *read_fds, fd_set *write_fds, fd_set *except_fds);
 
- public:
+public:
   SyslogCollectorInterface(const char *_endpoint);
   ~SyslogCollectorInterface();
 
@@ -66,19 +68,20 @@ class SyslogCollectorInterface : public SyslogParserInterface {
 
   int receive(int socket, char *client_ip, bool use_recvfrom);
 
-  virtual const char* get_type()    const { return(CONST_INTERFACE_TYPE_SYSLOG); };
-  virtual InterfaceType getIfType() const { return(interface_type_SYSLOG); }
-  inline char* getEndpoint([[maybe_unused]] u_int8_t id)   { return(endpoint);   };
-  virtual bool isPacketInterface() const  { return(false);      };
+  virtual const char *get_type() const {
+    return (CONST_INTERFACE_TYPE_SYSLOG);
+  };
+  virtual InterfaceType getIfType() const { return (interface_type_SYSLOG); }
+  inline char *getEndpoint([[maybe_unused]] u_int8_t id) { return (endpoint); };
+  virtual bool isPacketInterface() const { return (false); };
   void collect_events();
 
   void startPacketPolling();
   void shutdown();
   bool set_packet_filter(char *filter);
-  virtual void lua(lua_State* vm);
+  virtual void lua(lua_State *vm);
 };
 
 #endif /* HAVE_NEDGE */
 
 #endif /* _SYSLOG_COLLECTOR_INTERFACE_H_ */
-

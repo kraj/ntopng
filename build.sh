@@ -1,4 +1,6 @@
 #!/bin/bash
+clang_format=`which clang-format`
+echo ${clang_format}
 current_path=`pwd`
 if [ -d build ]; then
   @echo "Cleaning up cmake"

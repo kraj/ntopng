@@ -30,7 +30,7 @@ class AddressResolution {
   pthread_t *resolveThreadLoop;
   Mutex m;
 
- public:
+public:
   AddressResolution();
   ~AddressResolution();
 

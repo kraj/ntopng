@@ -27,44 +27,47 @@
 class NetworkInterface;
 
 class AlertableEntity {
- private:
+private:
   AlertEntity entity_type;
   std::string entity_val;
   NetworkInterface *alert_iface;
   u_int num_engaged_alerts;
 
- protected:  
-  RwLock engaged_alerts_lock; /* Lock to handle concurrent access from the GUI */
+protected:
+  RwLock
+      engaged_alerts_lock; /* Lock to handle concurrent access from the GUI */
 
   void incNumAlertsEngaged(AlertLevel alert_severity);
   void decNumAlertsEngaged(AlertLevel alert_severity);
 
- public:
+public:
   AlertableEntity(NetworkInterface *alert_iface, AlertEntity entity);
   virtual ~AlertableEntity();
 
   inline NetworkInterface *getAlertInterface() { return alert_iface; }
 
   inline void setEntityValue(const char *ent_val) { entity_val = ent_val; }
-  inline std::string getEntityValue() const { return(entity_val); }
+  inline std::string getEntityValue() const { return (entity_val); }
 
-  inline AlertEntity getEntityType()  const { return(entity_type); }
+  inline AlertEntity getEntityType() const { return (entity_type); }
 
-  inline u_int getNumEngagedAlerts()  const { return(num_engaged_alerts); }
+  inline u_int getNumEngagedAlerts() const { return (num_engaged_alerts); }
   // TODO get rid of this default
-  virtual void countAlerts([[maybe_unused ]] grouped_alerts_counters *counters) {};
+  virtual void
+  countAlerts([[maybe_unused]] grouped_alerts_counters *counters){};
   // TODO: it has to many parameters.
   // maybe a context struct should be more useful
-  virtual void getAlerts([[maybe_unused ]] lua_State* vm, 
-  [[maybe_unused ]] ScriptPeriodicity p, 
-			 [[maybe_unused ]] AlertType type_filter, 
-       [[maybe_unused ]] AlertLevel severity_filter, 
-       [[maybe_unused ]] AlertRole role_filter,
-			 [[maybe_unused ]] u_int *idx) {};
+  virtual void getAlerts([[maybe_unused]] lua_State *vm,
+                         [[maybe_unused]] ScriptPeriodicity p,
+                         [[maybe_unused]] AlertType type_filter,
+                         [[maybe_unused]] AlertLevel severity_filter,
+                         [[maybe_unused]] AlertRole role_filter,
+                         [[maybe_unused]] u_int *idx){};
 
   bool matchesAllowedNetworks(AddressTree *allowed_nets);
 
-  static int parseEntityValueIp(const char *alert_entity_value, struct in6_addr *ip_raw);
+  static int parseEntityValueIp(const char *alert_entity_value,
+                                struct in6_addr *ip_raw);
 };
 
 #endif

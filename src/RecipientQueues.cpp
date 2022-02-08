@@ -24,10 +24,8 @@
 /* *************************************** */
 
 RecipientQueues::RecipientQueues() {
-  for(int i = 0; i < RECIPIENT_NOTIFICATION_MAX_NUM_PRIORITIES; i++)
-    queues_by_prio[i] = NULL,
-      drops_by_prio[i] = 0,
-      uses_by_prio[i] = 0;
+  for (int i = 0; i < RECIPIENT_NOTIFICATION_MAX_NUM_PRIORITIES; i++)
+    queues_by_prio[i] = NULL, drops_by_prio[i] = 0, uses_by_prio[i] = 0;
   last_use = 0;
 
   /* No minimum severity */
@@ -43,21 +41,21 @@ RecipientQueues::RecipientQueues() {
 /* *************************************** */
 
 RecipientQueues::~RecipientQueues() {
-  for(int i = 0; i < RECIPIENT_NOTIFICATION_MAX_NUM_PRIORITIES; i++)
+  for (int i = 0; i < RECIPIENT_NOTIFICATION_MAX_NUM_PRIORITIES; i++)
     delete queues_by_prio[i];
 }
 
 /* *************************************** */
 
-bool RecipientQueues::dequeue(RecipientNotificationPriority prio, AlertFifoItem *notification) {
-  if(prio >= RECIPIENT_NOTIFICATION_MAX_NUM_PRIORITIES
-     || !queues_by_prio[prio]
-     || !notification)
+bool RecipientQueues::dequeue(RecipientNotificationPriority prio,
+                              AlertFifoItem *notification) {
+  if (prio >= RECIPIENT_NOTIFICATION_MAX_NUM_PRIORITIES ||
+      !queues_by_prio[prio] || !notification)
     return false;
 
   *notification = queues_by_prio[prio]->dequeue();
 
-  if(notification->alert) {
+  if (notification->alert) {
     last_use = time(NULL);
     return true;
   }
@@ -67,20 +65,24 @@ bool RecipientQueues::dequeue(RecipientNotificationPriority prio, AlertFifoItem 
 
 /* *************************************** */
 
-bool RecipientQueues::enqueue(RecipientNotificationPriority prio, const AlertFifoItem* const notification) {
+bool RecipientQueues::enqueue(RecipientNotificationPriority prio,
+                              const AlertFifoItem *const notification) {
   bool res = false;
 
-  if(!notification
-     || !notification->alert
-     || notification->alert_severity < minimum_severity              /* Severity too low for this recipient     */
-     || !(enabled_categories & (1 << notification->alert_category))  /* Category not enabled for this recipient */
-     )
+  if (!notification || !notification->alert ||
+      notification->alert_severity <
+          minimum_severity /* Severity too low for this recipient     */
+      || !(enabled_categories &
+           (1 << notification->alert_category)) /* Category not enabled for this
+                                                   recipient */
+  )
     return true; /* Nothing to enqueue */
 
-  if(prio >= RECIPIENT_NOTIFICATION_MAX_NUM_PRIORITIES)
+  if (prio >= RECIPIENT_NOTIFICATION_MAX_NUM_PRIORITIES)
     return false; /* Enqueue failed */
   else if ((!queues_by_prio[prio] &&
-	    !(queues_by_prio[prio] = new (nothrow) AlertFifoQueue(ALERTS_NOTIFICATIONS_QUEUE_SIZE)))) {
+            !(queues_by_prio[prio] = new (nothrow)
+                  AlertFifoQueue(ALERTS_NOTIFICATIONS_QUEUE_SIZE)))) {
     /* Queue not available */
     drops_by_prio[prio]++;
     return false; /* Enqueue failed */
@@ -88,12 +90,13 @@ bool RecipientQueues::enqueue(RecipientNotificationPriority prio, const AlertFif
 
   /* Enqueue the notification (allocate memory for the alert string) */
   AlertFifoItem q = *notification;
-  if((q.alert = strdup(notification->alert)))
+  if ((q.alert = strdup(notification->alert)))
     res = queues_by_prio[prio]->enqueue(q);
 
-  if(!res) {
+  if (!res) {
     drops_by_prio[prio]++;
-    if(q.alert) free(q.alert);
+    if (q.alert)
+      free(q.alert);
   } else
     uses_by_prio[prio]++;
 
@@ -102,13 +105,12 @@ bool RecipientQueues::enqueue(RecipientNotificationPriority prio, const AlertFif
 
 /* *************************************** */
 
-void RecipientQueues::lua(lua_State* vm) {
+void RecipientQueues::lua(lua_State *vm) {
   u_int64_t num_drops = 0, num_uses = 0;
   u_int8_t fill_pct = 0; /* Maximum fill pct among all queues */
-  for(int i = 0; i < RECIPIENT_NOTIFICATION_MAX_NUM_PRIORITIES; i++) {
-    num_drops +=  drops_by_prio[i],
-      num_uses += uses_by_prio[i];
-    if(queues_by_prio[i] && queues_by_prio[i]->fillPct() > fill_pct)
+  for (int i = 0; i < RECIPIENT_NOTIFICATION_MAX_NUM_PRIORITIES; i++) {
+    num_drops += drops_by_prio[i], num_uses += uses_by_prio[i];
+    if (queues_by_prio[i] && queues_by_prio[i]->fillPct() > fill_pct)
       fill_pct = queues_by_prio[i]->fillPct();
   }
 
@@ -124,11 +126,11 @@ void RecipientQueues::lua(lua_State* vm) {
 bool RecipientQueues::empty() {
   bool res = true;
 
-  for(int i = 0; i < RECIPIENT_NOTIFICATION_MAX_NUM_PRIORITIES; i++) {
-    if(queues_by_prio[i]) {
-      if(!queues_by_prio[i]->empty()) {
-	res = false;
-	break;
+  for (int i = 0; i < RECIPIENT_NOTIFICATION_MAX_NUM_PRIORITIES; i++) {
+    if (queues_by_prio[i]) {
+      if (!queues_by_prio[i]->empty()) {
+        res = false;
+        break;
       }
     }
   }

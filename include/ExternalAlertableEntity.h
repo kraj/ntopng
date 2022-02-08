@@ -27,13 +27,12 @@
 class NetworkInterface;
 
 class ExternalAlertableEntity : public OtherAlertableEntity {
- private:
-
- protected:
-
+private:
+protected:
 public:
- ExternalAlertableEntity(NetworkInterface *alert_iface, AlertEntity entity) : OtherAlertableEntity(alert_iface, entity) {};
-  virtual ~ExternalAlertableEntity() {};
+  ExternalAlertableEntity(NetworkInterface *alert_iface, AlertEntity entity)
+      : OtherAlertableEntity(alert_iface, entity){};
+  virtual ~ExternalAlertableEntity(){};
 };
 
 #endif

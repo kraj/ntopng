@@ -23,9 +23,7 @@
 
 /* *************************************** */
 
-ThroughputStats::ThroughputStats() {
-  resetStats();
-}
+ThroughputStats::ThroughputStats() { resetStats(); }
 
 /* *************************************** */
 
@@ -47,17 +45,46 @@ ThroughputStats::ThroughputStats(const ThroughputStats &thpts) {
   memcpy(&last_update_time, &thpts.last_update_time, sizeof(last_update_time));
 }
 
+ThroughputStats::ThroughputStats(ThroughputStats &&thpts) {
+  last_val = std::move(thpts.last_val);
+  thpt = std::move(thpts.thpt);
+  last_thpt = std::move(thpts.last_thpt);
+  thpt_trend = std::move(thpts.thpt_trend);
+  memcpy(&last_update_time, &thpts.last_update_time, sizeof(last_update_time));
+}
+
+ThroughputStats &ThroughputStats::operator=(const ThroughputStats &thpts) {
+  last_val = thpts.last_val;
+  thpt = sthpts.thpt);
+  last_thpt = thpts.last_thpt);
+  thpt_trend = thpts.thpt_trend);
+  memcpy(&last_update_time, &thpts.last_update_time, sizeof(last_update_time));
+  return *this;
+}
+ThroughputStats &ThroughputStats::operator=(ThroughputStats &&thpts) {
+  last_val = std::move(thpts.last_val);
+  thpt = std::move(thpts.thpt);
+  last_thpt = std::move(thpts.last_thpt);
+  thpt_trend = std::move(thpts.thpt_trend);
+  memcpy(&last_update_time, &thpts.last_update_time, sizeof(last_update_time));
+  return *this;
+}
+
 /* *************************************** */
 
 void ThroughputStats::updateStats(const struct timeval *tv, u_int64_t new_val) {
-  if(last_update_time.tv_sec > 0 /* Waits at least two calls before computing the throughput */
-     && new_val >= last_val /* Protects against resets / wraps */) {
+  if (last_update_time.tv_sec >
+          0 /* Waits at least two calls before computing the throughput */
+      && new_val >= last_val /* Protects against resets / wraps */) {
     float tdiff = Utils::msTimevalDiff(tv, &last_update_time);
     float new_thpt = ((float)((new_val - last_val) * 1000)) / (1 + tdiff);
 
-    if(thpt < new_thpt)      thpt_trend = trend_up;
-    else if(thpt > new_thpt) thpt_trend = trend_down;
-    else                     thpt_trend = trend_stable;
+    if (thpt < new_thpt)
+      thpt_trend = trend_up;
+    else if (thpt > new_thpt)
+      thpt_trend = trend_down;
+    else
+      thpt_trend = trend_stable;
 
     last_thpt = thpt;
     thpt = new_thpt;
@@ -68,3 +95,8 @@ void ThroughputStats::updateStats(const struct timeval *tv, u_int64_t new_val) {
 }
 
 /* *************************************** */
+float ThroughputStats::getThpt() const { return thpt; };
+ValueTrend ThroughputStats::getTrend() const { return thpt_trend; };
+void ThroughputStats::sum(ThroughputStats *thpts) const {
+  thpts->thpt += thpt, thpts->thpt_trend = thpt_trend; /* TODO: handle trend */
+};

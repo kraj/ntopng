@@ -25,11 +25,14 @@
 #include "ntop_includes.h"
 
 class AlertStore {
- public:
+public:
   AlertStore() { ; };
   virtual ~AlertStore() { ; };
-  
-  virtual bool query([[maybe_unused]] lua_State *vm, [[maybe_unused]] const char * query) { return false; };
+
+  virtual bool query([[maybe_unused]] lua_State *vm,
+                     [[maybe_unused]] const char *query) {
+    return false;
+  };
 };
 
 #endif /* _ALERT_STORE_H_ */
